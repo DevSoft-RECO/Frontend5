@@ -23,8 +23,12 @@
             <ul class="list-disc list-inside space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <li>El archivo debe estar delimitado por pipes (<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">|</code>).</li>
                 <li>La primera columna debe ser el ID numérico del cliente.</li>
-                <li>Las fechas deben tener el formato <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">YYYYMMDD</code>.</li>
-                <li>Use el filtro de fechas para actualizaciones incrementales (recomendado).</li>
+                <li><strong>Filtro de Fechas:</strong>
+                    <ul class="list-circle list-inside ml-4 mt-1">
+                        <li>Para un <strong>rango</strong>: Seleccione fecha "Desde" y "Hasta".</li>
+                        <li>Para un <strong>solo día</strong>: Seleccione únicamente la fecha "Desde".</li>
+                    </ul>
+                </li>
             </ul>
             
             <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 p-4 mt-4">
@@ -73,29 +77,17 @@
             <!-- Date Range Filters -->
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Desde (YYYYMMDD)</label>
-                    <input v-model="form.desde" type="text" maxlength="8" placeholder="20250101" 
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Desde</label>
+                    <input v-model="form.desde" type="date"
                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-verde-cope focus:ring focus:ring-verde-cope focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                            :disabled="form.full">
                 </div>
                 <div>
-                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hasta (YYYYMMDD)</label>
-                    <input v-model="form.hasta" type="text" maxlength="8" placeholder="20250101" 
+                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hasta (Opcional)</label>
+                    <input v-model="form.hasta" type="date"
                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-verde-cope focus:ring focus:ring-verde-cope focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                            :disabled="form.full">
                 </div>
-            </div>
-
-            <!-- Full Load Toggle -->
-            <div class="flex items-center justify-between py-3 px-4 bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/30">
-                <div class="flex flex-col">
-                    <span class="text-sm font-medium text-red-800 dark:text-red-300">Carga Completa (Emergencia)</span>
-                    <span class="text-xs text-red-600 dark:text-red-400">Ignora fechas y procesa todo.</span>
-                </div>
-                <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" v-model="form.full" class="sr-only peer">
-                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
-                </label>
             </div>
 
             <!-- Submit Button -->
@@ -108,6 +100,26 @@
                 </svg>
                 {{ importStore.isUploading ? 'Subiendo...' : 'Iniciar Importación' }}
             </button>
+
+            <!-- Advanced Options (Full Load) -->
+            <details class="group">
+                <summary class="flex items-center text-xs text-gray-400 cursor-pointer hover:text-gray-600 dark:hover:text-gray-200 select-none">
+                    <svg class="h-4 w-4 mr-1 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    Opciones Avanzadas
+                </summary>
+                <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center justify-between py-3 px-4 bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/30">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-medium text-red-800 dark:text-red-300">Carga Completa (Emergencia)</span>
+                            <span class="text-xs text-red-600 dark:text-red-400">Ignora fechas y procesa todo.</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" v-model="form.full" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
+                        </label>
+                    </div>
+                </div>
+            </details>
 
         </div>
       </div>
@@ -178,8 +190,8 @@ const handleSubmit = async () => {
     }
 
     importStore.startImport(selectedFile.value, {
-        desde: form.desde,
-        hasta: form.hasta,
+        desde: form.desde.replace(/-/g, ''), // YYYY-MM-DD -> YYYYMMDD
+        hasta: form.hasta ? form.hasta.replace(/-/g, '') : null,
         full: form.full
     })
     
