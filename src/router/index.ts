@@ -36,6 +36,14 @@ const routes: RouteRecordRaw[] = [
         },
         children: [
             {
+                path: 'carga-datos/clientes',
+                name: 'admin-carga-clientes',
+                component: () => import('@/views/carga-datos/ClientesImportView.vue'),
+                meta: {
+                    title: 'Carga de Clientes'
+                }
+            },
+            {
                 path: 'dashboard',
                 name: 'dashboard',
                 component: DashboardView,

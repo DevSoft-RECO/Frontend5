@@ -17,7 +17,7 @@
       </main>
     </div>
 
-
+    <UploadWidget /> 
   </div>
 </template>
 
@@ -25,6 +25,7 @@
 import { onMounted, onUnmounted } from 'vue' // Agregamos onUnmounted
 import AdminSidebar from "../components/layout/AdminSidebar.vue"
 import AdminHeader from "../components/layout/AdminHeader.vue"
+import UploadWidget from "../components/common/UploadWidget.vue" // Import Widget
 import { useLayoutStore } from "@/stores/layout"
 
 const layoutStore = useLayoutStore()

@@ -254,6 +254,18 @@ const menuItems = computed(() => {
             iconSvg: '<path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2 7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2v10a1 1 0 01-1 1h-3m-4 0h4" />',
             show: true
         },
+        {
+            id: 'carga-datos',
+            label: 'Carga de Datos',
+            iconSvg: '<path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />',
+            show: true,
+            children: [
+                {
+                    label: 'Clientes',
+                    route: '/admin/carga-datos/clientes'
+                }
+            ]
+        },
 
         // --- EJEMPLO BASE FUNCIONAL CON SUBITEMS (Siempre visible) ---
         // Útil para agrupar opciones sin depender de permisos
