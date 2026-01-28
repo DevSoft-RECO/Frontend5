@@ -1,6 +1,6 @@
 <template>
   <Transition name="slide-up">
-    <div v-if="importStore.status !== 'idle'" 
+    <div v-if="importStore.isWidgetVisible" 
          class="fixed bottom-4 right-4 z-50 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col transition-all duration-300"
          :class="{ 'h-14': importStore.isWidgetMinimized }">
       
@@ -43,10 +43,8 @@
 
         <!-- Progress Bar -->
         <div v-if="importStore.status === 'processing' || importStore.status === 'uploading'" class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
-            <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-500 relative overflow-hidden" 
-                 :style="{ width: '100%' }">
-                 <!-- Indeterminate animation for now as precise % is hard -->
-                 <div class="absolute inset-0 bg-white/30 animate-pulse-fast"></div>
+            <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-300 relative overflow-hidden" 
+                 :style="{ width: `${importStore.progress}%` }">
             </div>
         </div>
 

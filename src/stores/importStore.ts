@@ -16,6 +16,7 @@ interface ImportState {
   status: 'idle' | 'uploading' | 'processing' | 'completed' | 'failed'
   message: string
   isWidgetMinimized: boolean
+  isWidgetVisible: boolean
   pollingInterval: any | null
 }
 
@@ -30,6 +31,7 @@ export const useImportStore = defineStore('import', {
     status: 'idle',
     message: '',
     isWidgetMinimized: false,
+    isWidgetVisible: false, // New state
     pollingInterval: null
   }),
 
@@ -41,6 +43,7 @@ export const useImportStore = defineStore('import', {
       this.progress = 0
       this.processedCount = 0
       this.skippedCount = 0
+      this.isWidgetVisible = true // Ensure visible on start
 
       const formData = new FormData()
       formData.append('file', file)
@@ -52,6 +55,17 @@ export const useImportStore = defineStore('import', {
         const response = await axios.post(`${API_BASE}/upload`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+              this.progress = percentCompleted
+              if (percentCompleted === 100) {
+                this.message = 'Verificando archivo...'
+              } else {
+                this.message = `Subiendo archivo: ${percentCompleted}%`
+              }
+            }
           }
         })
 
@@ -62,16 +76,6 @@ export const useImportStore = defineStore('import', {
           this.status = 'processing'
           this.message = 'Procesando en segundo plano...'
           this.startPolling()
-
-          Swal.fire({
-            icon: 'info',
-            title: 'Importación Iniciada',
-            text: 'El proceso continuará en segundo plano. Puedes minimizar esta ventana y seguir trabajando.',
-            toast: true,
-            position: 'top-end',
-            timer: 3000,
-            showConfirmButton: false
-          })
         }
       } catch (error: any) {
         this.resetState()
@@ -100,7 +104,6 @@ export const useImportStore = defineStore('import', {
           this.status = data.status
           this.message = data.message
 
-          // Update stats
           if (data.processed !== undefined) this.processedCount = data.processed
           if (data.skipped !== undefined) this.skippedCount = data.skipped
           if (data.progress !== undefined) this.progress = data.progress
@@ -109,14 +112,16 @@ export const useImportStore = defineStore('import', {
             this.stopPolling()
             this.isProcessing = false
 
-            if (data.status === 'completed') {
+            // Only show notification if widget is hidden (closed by user)
+            if (!this.isWidgetVisible && data.status === 'completed') {
               Swal.fire({
                 icon: 'success',
                 title: '¡Importación Completada!',
                 text: `${this.processedCount} registros actualizados.`,
                 toast: true,
                 position: 'bottom-end',
-                showConfirmButton: true
+                showConfirmButton: true,
+                timer: 5000
               })
             }
           }
@@ -124,7 +129,7 @@ export const useImportStore = defineStore('import', {
         } catch (error) {
           console.error("Polling error", error)
         }
-      }, 2000) // Poll every 2 seconds
+      }, 2000)
     },
 
     stopPolling() {
@@ -144,6 +149,7 @@ export const useImportStore = defineStore('import', {
       this.skippedCount = 0
       this.status = 'idle'
       this.message = ''
+      this.isWidgetVisible = false
     },
 
     toggleMinimize() {
@@ -152,19 +158,20 @@ export const useImportStore = defineStore('import', {
 
     closeWidget() {
       if (this.isProcessing) {
+        // If processing, just hide it to background, don't ask, don't stop.
+        this.isWidgetVisible = false
+
         Swal.fire({
-          title: '¿Ocultar widget?',
-          text: "El proceso continuará, pero dejarás de verlo aquí.",
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, ocultar',
-          cancelButtonText: 'Cancelar'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.resetState()
-          }
+          icon: 'info',
+          title: 'Ejecutando en segundo plano',
+          text: 'Te avisaremos cuando termine.',
+          toast: true,
+          position: 'bottom-end',
+          timer: 2000,
+          showConfirmButton: false
         })
       } else {
+        // If finished or idle, fully reset
         this.resetState()
       }
     }
