@@ -44,6 +44,14 @@ const routes: RouteRecordRaw[] = [
                 }
             },
             {
+                path: 'consultas/busqueda-cliente',
+                name: 'admin-busqueda-cliente',
+                component: () => import('@/views/consultas/BusquedaClienteView.vue'),
+                meta: {
+                    title: 'Búsqueda de Cliente'
+                }
+            },
+            {
                 path: 'dashboard',
                 name: 'dashboard',
                 component: DashboardView,
