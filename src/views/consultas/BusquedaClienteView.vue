@@ -94,6 +94,23 @@
                 <p class="text-gray-900 dark:text-gray-200">{{ client.estado_civil || 'N/A' }}</p>
             </div>
 
+            <div class="space-y-1">
+                <span class="text-xs text-gray-500 uppercase font-semibold">Puesto / Ocupación</span>
+                <p class="text-gray-900 dark:text-gray-200">{{ client.puesto || client.ocupacion || 'N/A' }}</p>
+            </div>
+
+            <div class="space-y-1">
+                <span class="text-xs text-gray-500 uppercase font-semibold">Profesión</span>
+                <p class="text-gray-900 dark:text-gray-200">{{ client.profesion || 'N/A' }}</p>
+            </div>
+
+            <div class="space-y-1">
+                <span class="text-xs text-gray-500 uppercase font-semibold">Ingresos Laborales</span>
+                <p class="text-gray-900 dark:text-gray-200 font-mono text-sm">
+                    {{ formatCurrency(client.ingresos_laborales, client.moneda_ingreso_laboral) }}
+                </p>
+            </div>
+
         </div>
     </div>
   </div>
@@ -117,6 +134,11 @@ interface Client {
     fecha_nacimiento: string
     actividad_economica_ive: string
     estado_civil: string
+    puesto: string
+    ocupacion: string
+    profesion: string
+    ingresos_laborales: number
+    moneda_ingreso_laboral: string
 }
 
 const dpi = ref('')
@@ -154,6 +176,14 @@ const handleSearch = async () => {
 
 const formatDate = (dateStr: string) => {
     if (!dateStr) return 'N/A'
-    return new Date(dateStr).toLocaleDateString()
+    return new Date(dateStr).toLocaleDateString('es-GT', { timeZone: 'UTC' })
+}
+
+const formatCurrency = (amount: number, currency: string) => {
+    if (!amount) return 'N/A'
+    return new Intl.NumberFormat('es-GT', { 
+        style: 'currency', 
+        currency: currency || 'GTQ' 
+    }).format(amount)
 }
 </script>
