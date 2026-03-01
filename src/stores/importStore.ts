@@ -36,7 +36,7 @@ export const useImportStore = defineStore('import', {
   }),
 
   actions: {
-    async startImport(file: File, dates: { desde: string | null, hasta: string | null, full: boolean }) {
+    async startImport(file: File, dates: { desde: string | null, hasta: string | null, full: boolean }, type: 'clientes' | 'colocacion' = 'clientes') {
       this.isUploading = true
       this.status = 'uploading'
       this.message = 'Subiendo archivo...'
@@ -47,6 +47,7 @@ export const useImportStore = defineStore('import', {
 
       const formData = new FormData()
       formData.append('file', file)
+      formData.append('type', type)
       if (dates.desde) formData.append('desde', dates.desde)
       if (dates.hasta) formData.append('hasta', dates.hasta)
       if (dates.full) formData.append('full', '1')

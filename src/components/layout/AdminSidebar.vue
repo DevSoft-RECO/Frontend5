@@ -263,6 +263,10 @@ const menuItems = computed(() => {
                 {
                     label: 'Clientes',
                     route: '/admin/carga-datos/clientes'
+                },
+                {
+                    label: 'Colocación',
+                    route: '/admin/carga-datos/colocacion'
                 }
             ]
         },
