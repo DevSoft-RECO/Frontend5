@@ -17,7 +17,7 @@
             </div>
             
             <span class="font-medium text-sm truncate">
-                {{ importStore.isWidgetMinimized ? importStore.message : 'Progreso de Importación' }}
+                {{ importStore.isWidgetMinimized ? importStore.message : (importStore.importType === 'clientes' ? 'Carga de Clientes' : 'Carga de Colocación') }}
             </span>
         </div>
         
@@ -43,7 +43,8 @@
 
         <!-- Progress Bar -->
         <div v-if="importStore.status === 'processing' || importStore.status === 'uploading'" class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
-            <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-300 relative overflow-hidden" 
+            <div class="h-2.5 rounded-full transition-all duration-300 relative overflow-hidden" 
+                 :class="importStore.importType === 'clientes' ? 'bg-verde-cope' : 'bg-blue-600'"
                  :style="{ width: `${importStore.progress}%` }">
             </div>
         </div>

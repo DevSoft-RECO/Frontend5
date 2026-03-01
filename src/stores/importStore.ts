@@ -14,6 +14,7 @@ interface ImportState {
   processedCount: number
   skippedCount: number
   status: 'idle' | 'uploading' | 'processing' | 'completed' | 'failed'
+  importType: 'clientes' | 'colocacion'
   message: string
   isWidgetMinimized: boolean
   isWidgetVisible: boolean
@@ -29,6 +30,7 @@ export const useImportStore = defineStore('import', {
     processedCount: 0,
     skippedCount: 0,
     status: 'idle',
+    importType: 'clientes',
     message: '',
     isWidgetMinimized: false,
     isWidgetVisible: false, // New state
@@ -37,6 +39,7 @@ export const useImportStore = defineStore('import', {
 
   actions: {
     async startImport(file: File, dates: { desde: string | null, hasta: string | null, full: boolean }, type: 'clientes' | 'colocacion' = 'clientes') {
+      this.importType = type
       this.isUploading = true
       this.status = 'uploading'
       this.message = 'Subiendo archivo...'
