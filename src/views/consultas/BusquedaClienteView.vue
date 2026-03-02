@@ -352,6 +352,9 @@ const handleManualRegistration = async (isForcedByMora = false) => {
                     icon: 'success',
                     confirmButtonColor: '#5eb301',
                     customClass: { popup: 'rounded-3xl shadow-2xl' }
+                }).then(() => {
+                    searchQuery.value = '';
+                    result.value = null;
                 })
             }
         } catch (error: any) {
@@ -443,14 +446,17 @@ const handleVerify = async () => {
                         }
                     },
                     allowOutsideClick: () => !Swal.isLoading()
-                }).then((result) => {
-                    if (result.isConfirmed) {
+                }).then((resultDialog) => {
+                    if (resultDialog.isConfirmed) {
                         Swal.fire({
                             title: '¡Asistencia Registrada!',
                             text: 'La presencia del asociado ha sido grabada exitosamente.',
                             icon: 'success',
                             confirmButtonColor: '#5eb301',
                             customClass: { popup: 'rounded-3xl shadow-2xl' }
+                        }).then(() => {
+                            searchQuery.value = '';
+                            result.value = null;
                         })
                     }
                 })
