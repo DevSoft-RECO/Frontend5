@@ -303,6 +303,10 @@ const menuItems = computed(() => {
                 {
                     label: 'Gestión Urnas',
                     route: '/admin/urnas'
+                },
+                {
+                    label: 'Registrar Votos',
+                    route: '/admin/votos/registrar'
                 }
             ]
         },

@@ -76,6 +76,14 @@ const routes: RouteRecordRaw[] = [
                 }
             },
             {
+                path: 'votos/registrar',
+                name: 'admin-registrar-votos',
+                component: () => import('@/views/admin/RegistrarVotosView.vue'),
+                meta: {
+                    title: 'Registrar Votos'
+                }
+            },
+            {
                 path: 'dashboard',
                 name: 'dashboard',
                 component: DashboardView,
