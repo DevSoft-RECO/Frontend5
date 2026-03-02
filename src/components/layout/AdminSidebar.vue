@@ -255,22 +255,6 @@ const menuItems = computed(() => {
             show: true
         },
         {
-            id: 'carga-datos',
-            label: 'Carga de Datos',
-            iconSvg: '<path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />',
-            show: true,
-            children: [
-                {
-                    label: 'Clientes',
-                    route: '/admin/carga-datos/clientes'
-                },
-                {
-                    label: 'Colocación',
-                    route: '/admin/carga-datos/colocacion'
-                }
-            ]
-        },
-        {
             id: 'formularios',
             label: 'Verificar Asociados',
             iconSvg: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />',
@@ -310,19 +294,35 @@ const menuItems = computed(() => {
                 }
             ]
         },
+        {
+            id: 'carga-datos',
+            label: 'Carga de Datos',
+            iconSvg: '<path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />',
+            show: true,
+            children: [
+                {
+                    label: 'Clientes',
+                    route: '/admin/carga-datos/clientes'
+                },
+                {
+                    label: 'Colocación',
+                    route: '/admin/carga-datos/colocacion'
+                }
+            ]
+        },
 
         // --- EJEMPLO BASE FUNCIONAL CON SUBITEMS (Siempre visible) ---
         // Útil para agrupar opciones sin depender de permisos
-        {
-            id: 'ejemplo-base-grupo',
-            label: 'Ejemplo Grupo',
-            iconSvg: '<path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />',
-            show: true,
-            children: [
-                { label: 'Opción A', route: '/admin/dashboard#opcion-a' },
-                { label: 'Opción B', route: '/admin/dashboard#opcion-b' }
-            ]
-        },
+        // {
+        //     id: 'ejemplo-base-grupo',
+        //     label: 'Ejemplo Grupo',
+        //     iconSvg: '<path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />',
+        //     show: true,
+        //     children: [
+        //         { label: 'Opción A', route: '/admin/dashboard#opcion-a' },
+        //         { label: 'Opción B', route: '/admin/dashboard#opcion-b' }
+        //     ]
+        // },
 
         /*
         // --- CONTINUACIÓN EJEMPLO GRUPO DINÁMICO ---
