@@ -247,43 +247,56 @@ const handleSearch = async () => {
     }
 }
 
-const handleManualRegistration = async () => {
+const handleManualRegistration = async (isForcedByMora = false) => {
+    const defaultCodigo = result.value?.personal?.codigo_cliente || '';
+    const defaultDpi = result.value?.personal?.dpi || '';
+    const defaultNombre = result.value?.personal ? [result.value.personal.nombre1, result.value.personal.nombre2, result.value.personal.nombre3, result.value.personal.apellido1, result.value.personal.apellido2].filter(Boolean).join(' ') : '';
+    const defaultUbicacion = result.value?.personal ? `${result.value.personal.muni_domicilio}, ${result.value.personal.depto_domicilio}` : '';
+    const defaultEdad = result.value?.personal?.edad ? Math.floor(result.value.personal.edad) : '';
+    const defaultGenero = result.value?.personal?.genero?.toUpperCase() || '';
+
     const { value: formValues } = await Swal.fire({
-        title: 'Registro de Asistencia Manual',
+        title: isForcedByMora ? 'Forzar Registro de Asistencia' : 'Registro de Asistencia Manual',
         html: `
             <div class="space-y-4 py-2">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="text-left">
                         <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Código de Cliente</label>
-                        <input id="swal-codigo" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Ej. 1675931">
+                        <input id="swal-codigo" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Ej. 1675931" value="${defaultCodigo}">
                     </div>
                     <div class="text-left">
                         <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">DPI / CUI</label>
-                        <input id="swal-dpi" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="DPI">
+                        <input id="swal-dpi" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="DPI" value="${defaultDpi}">
                     </div>
                 </div>
                 <div class="text-left">
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nombre Completo</label>
-                    <input id="swal-nombre" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Nombre y Apellidos">
+                    <input id="swal-nombre" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Nombre y Apellidos" value="${defaultNombre}">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="text-left">
                         <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Edad</label>
-                        <input id="swal-edad" type="number" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Edad">
+                        <input id="swal-edad" type="number" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Edad" value="${defaultEdad}">
                     </div>
                     <div class="text-left">
                         <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Género</label>
                         <select id="swal-genero" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope">
-                             <option value="">Seleccione...</option>
-                             <option value="MASCULINO">Masculino</option>
-                             <option value="FEMENINO">Femenino</option>
+                             <option value="" ${!defaultGenero ? 'selected' : ''}>Seleccione...</option>
+                             <option value="MASCULINO" ${defaultGenero === 'MASCULINO' ? 'selected' : ''}>Masculino</option>
+                             <option value="FEMENINO" ${defaultGenero === 'FEMENINO' ? 'selected' : ''}>Femenino</option>
                         </select>
                     </div>
                 </div>
                 <div class="text-left">
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Ubicación</label>
-                    <input id="swal-ubicacion" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Municipio, Departamento">
+                    <input id="swal-ubicacion" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Municipio, Departamento" value="${defaultUbicacion}">
                 </div>
+                ${isForcedByMora ? `
+                <div class="text-left mt-4 border-t border-gray-100 pt-4">
+                    <label class="block text-[10px] font-bold text-orange-600 uppercase tracking-wider mb-1">Observación (Justificación)</label>
+                    <textarea id="swal-observacion" rows="2" class="w-full rounded-xl border-orange-200 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-orange-50/50 block" placeholder="Justifique por qué se inscribe aunque tenga mora..."></textarea>
+                </div>
+                ` : ''}
             </div>
         `,
         focusConfirm: false,
@@ -299,9 +312,16 @@ const handleManualRegistration = async () => {
             const ubicacion = (document.getElementById('swal-ubicacion') as HTMLInputElement).value
             const edad = (document.getElementById('swal-edad') as HTMLInputElement).value
             const genero = (document.getElementById('swal-genero') as HTMLSelectElement).value
+            const obsEl = document.getElementById('swal-observacion') as HTMLTextAreaElement | null
+            const observacion = obsEl ? obsEl.value : null
 
             if (!codigo || !dpi || !nombre || !ubicacion || !edad || !genero) {
-                Swal.showValidationMessage('Todos los campos son obligatorios')
+                Swal.showValidationMessage('Todos los campos básicos son obligatorios')
+                return false
+            }
+
+            if (isForcedByMora && !observacion?.trim()) {
+                Swal.showValidationMessage('Debe ingresar una observación justificando la confirmación')
                 return false
             }
 
@@ -311,7 +331,8 @@ const handleManualRegistration = async () => {
                 nombre_completo: nombre, 
                 ubicacion,
                 edad,
-                genero
+                genero,
+                observacion
             }
         }
     })
@@ -321,7 +342,7 @@ const handleManualRegistration = async () => {
         try {
             const response = await axios.post('http://localhost:8004/api/asistencia/confirmar', {
                 ...formValues,
-                tipo_asistencia: 'manual'
+                tipo_asistencia: isForcedByMora ? 'sistema' : 'manual'
             })
 
             if (response.data.success) {
@@ -434,7 +455,9 @@ const handleVerify = async () => {
                     }
                 })
             } else {
-                Swal.fire({
+                const soloMoraFalla = checks.edad.passed && checks.aportaciones.passed && !checks.mora.passed;
+                
+                let config: any = {
                     title: 'No Cumple Requisitos',
                     html: `
                         <p class="mb-4 text-gray-500 text-sm">El asociado no cumple con los requisitos mínimos para participar en esta gestión.</p>
@@ -446,6 +469,18 @@ const handleVerify = async () => {
                     customClass: {
                         popup: 'rounded-3xl shadow-2xl',
                         title: 'text-2xl font-bold text-gray-900'
+                    }
+                };
+                
+                if (soloMoraFalla) {
+                    config.showCancelButton = true;
+                    config.cancelButtonText = 'Forzar Confirmación';
+                    config.cancelButtonColor = '#f59e0b';
+                }
+
+                Swal.fire(config).then((alertResult) => {
+                    if (soloMoraFalla && alertResult.dismiss === Swal.DismissReason.cancel) {
+                        handleManualRegistration(true);
                     }
                 })
             }
