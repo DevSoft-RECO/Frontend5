@@ -89,100 +89,100 @@
                    <h2 class="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Resultados Preliminares {{ stats.year }}</h2>
                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Escrutinio consolidado de todas las mesas</p>
                 </div>
-                <!-- Enhanced Stats Badges -->
-                <div class="flex flex-wrap gap-3">
-                    <div class="px-4 py-2 bg-verde-cope text-white rounded-xl text-xs font-black uppercase shadow-lg shadow-verde-cope/20 flex flex-col items-center min-w-[100px]">
-                        <span class="text-[10px] opacity-70">Votos Válidos</span>
-                        <span class="text-lg leading-none mt-1">{{ stats.votos_validos }}</span>
+                <!-- Enhanced Stats Badges (Enlarged) -->
+                <div class="flex flex-wrap gap-4">
+                    <div class="px-6 py-3 bg-verde-cope text-white rounded-2xl text-sm font-black uppercase shadow-xl shadow-verde-cope/20 flex flex-col items-center min-w-[130px] transition-transform hover:scale-105">
+                        <span class="text-[11px] opacity-70">Votos Válidos</span>
+                        <span class="text-2xl leading-none mt-1">{{ stats.votos_validos }}</span>
                     </div>
-                    <div class="px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-black uppercase shadow-lg shadow-red-600/20 flex flex-col items-center min-w-[100px]">
-                        <span class="text-[10px] opacity-70">Votos Nulos</span>
-                        <span class="text-lg leading-none mt-1">{{ stats.votos_nulos }}</span>
+                    <div class="px-6 py-3 bg-red-600 text-white rounded-2xl text-sm font-black uppercase shadow-xl shadow-red-600/20 flex flex-col items-center min-w-[130px] transition-transform hover:scale-105">
+                        <span class="text-[11px] opacity-70">Votos Nulos</span>
+                        <span class="text-2xl leading-none mt-1">{{ stats.votos_nulos }}</span>
                     </div>
-                    <div class="px-4 py-2 bg-gray-500 text-white rounded-xl text-xs font-black uppercase shadow-lg shadow-gray-500/20 flex flex-col items-center min-w-[100px]">
-                        <span class="text-[10px] opacity-70">En Blanco</span>
-                        <span class="text-lg leading-none mt-1">{{ stats.votos_blancos }}</span>
+                    <div class="px-6 py-3 bg-gray-500 text-white rounded-2xl text-sm font-black uppercase shadow-xl shadow-gray-500/20 flex flex-col items-center min-w-[130px] transition-transform hover:scale-105">
+                        <span class="text-[11px] opacity-70">En Blanco</span>
+                        <span class="text-2xl leading-none mt-1">{{ stats.votos_blancos }}</span>
                     </div>
-                    <div class="px-4 py-2 bg-azul-cope text-white rounded-xl text-xs font-black uppercase shadow-lg shadow-azul-cope/20 flex flex-col items-center min-w-[100px]">
-                        <span class="text-[10px] opacity-70">Total Votantes</span>
-                        <span class="text-lg leading-none mt-1">{{ stats.total_votantes }}</span>
+                    <div class="px-6 py-3 bg-azul-cope text-white rounded-2xl text-sm font-black uppercase shadow-xl shadow-azul-cope/20 flex flex-col items-center min-w-[130px] transition-transform hover:scale-105">
+                        <span class="text-[11px] opacity-70">Total Votantes</span>
+                        <span class="text-2xl leading-none mt-1">{{ stats.total_votantes }}</span>
                     </div>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-4">
                 <button v-if="!isFullscreen"
                         @click="toggleFullscreen" 
-                        class="px-4 py-2 bg-gray-50 hover:bg-gray-100 dark:bg-gray-900/50 dark:hover:bg-gray-900 text-gray-600 dark:text-gray-300 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-black uppercase tracking-widest transition-all shadow-sm flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                        class="px-5 py-3 bg-gray-50 hover:bg-gray-100 dark:bg-gray-900/50 dark:hover:bg-gray-900 text-gray-600 dark:text-gray-300 rounded-2xl border border-gray-200 dark:border-gray-700 text-xs font-black uppercase tracking-widest transition-all shadow-sm flex items-center gap-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                     <span>Pantalla Completa</span>
                 </button>
-                <div class="px-4 py-2 bg-verde-cope/10 text-verde-cope rounded-2xl font-black text-xs uppercase shadow-sm border border-verde-cope/20 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-verde-cope animate-pulse"></span>
-                    En Vivo
+                <div class="px-5 py-3 bg-verde-cope/10 text-verde-cope rounded-2xl font-black text-xs uppercase shadow-sm border border-verde-cope/20 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-verde-cope animate-pulse"></span>
+                    Sindicato En Vivo
                 </div>
             </div>
         </div>
 
-        <!-- Vertical Chart Layout -->
-        <div :class="[isFullscreen ? 'flex-1 flex gap-4' : 'flex flex-wrap gap-4 overflow-x-auto pb-4']">
+        <!-- Vertical Chart Layout (Optimized for no-scroll) -->
+        <div :class="[isFullscreen ? 'flex-1 flex gap-6 pb-2 items-stretch' : 'flex flex-wrap gap-4 overflow-x-auto pb-4']">
             <div v-for="(candidato, index) in sortedCandidatos" :key="candidato.id" 
                  :class="[
-                    'group relative flex flex-col items-center transition-all hover:bg-gray-50 dark:hover:bg-gray-900/40 rounded-[32px] p-4 border border-transparent',
-                    isFullscreen ? 'flex-1 min-w-0' : 'w-48 shrink-0 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm'
+                    'group relative flex flex-col items-center transition-all hover:bg-gray-50 dark:hover:bg-gray-900/40 rounded-[40px] border border-transparent',
+                    isFullscreen ? 'flex-1 min-w-0 p-6' : 'w-56 shrink-0 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-4'
                  ]">
                 
                 <!-- 1. Candidate Photo (Top) -->
-                <div class="relative mb-4 shrink-0">
+                <div class="relative mb-6 shrink-0">
                     <img :src="candidato.foto_url || '/placeholder-user.png'" 
                          class="rounded-full object-cover border-4 transition-transform duration-500 group-hover:scale-105" 
                          :class="[
-                            isFullscreen ? 'w-20 h-20 md:w-32 md:h-32' : 'w-24 h-24',
-                            index === 0 ? 'border-verde-cope shadow-[0_0_20px_rgba(94,179,1,0.3)]' : 'border-white dark:border-gray-800 shadow-xl'
+                            isFullscreen ? 'w-24 h-24 md:w-40 md:h-40' : 'w-24 h-24',
+                            index === 0 ? 'border-verde-cope shadow-[0_0_30px_rgba(94,179,1,0.4)]' : 'border-white dark:border-gray-800 shadow-2xl'
                          ]"
                          alt="Avatar">
                     
                     <!-- Rank Badge -->
-                    <div class="absolute -top-2 -right-2 w-8 h-8 md:w-10 md:h-10 text-white text-base font-black flex items-center justify-center rounded-xl shadow-xl border-4 border-white dark:border-gray-800"
+                    <div class="absolute -top-3 -right-3 w-10 h-10 md:w-14 md:h-14 text-white text-xl font-black flex items-center justify-center rounded-2xl shadow-2xl border-4 border-white dark:border-gray-800"
                          :class="index === 0 ? 'bg-verde-cope' : 'bg-azul-cope'">
                         {{ index + 1 }}
                     </div>
                 </div>
 
                 <!-- 2. Vertical Bar (Middle) -->
-                <div class="flex-1 w-full flex flex-col items-center justify-end px-4 gap-3">
+                <div class="flex-1 w-full flex flex-col items-center justify-end px-4 gap-4">
                     <!-- Vote Count (Above Bar) -->
                     <div class="text-center">
                         <span class="font-black text-gray-900 dark:text-white tabular-nums leading-none block"
-                              :class="[isFullscreen ? 'text-2xl md:text-4xl' : 'text-2xl']">
+                              :class="[isFullscreen ? 'text-3xl md:text-5xl' : 'text-3xl']">
                             {{ candidato.total_votos }}
                         </span>
-                        <span class="text-[10px] font-black text-gray-400 uppercase italic">Votos</span>
+                        <span class="text-[12px] font-black text-gray-400 uppercase italic">Votos</span>
                     </div>
 
-                    <!-- The Bar -->
-                    <div class="relative w-8 md:w-12 bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden border border-gray-200/10 p-1"
-                         :class="[isFullscreen ? 'min-h-[100px] flex-1' : 'h-32']">
-                        <div class="absolute inset-x-1 bottom-1 bg-gradient-to-t transition-all duration-1000 ease-out shadow-lg rounded-full"
+                    <!-- The Bar (Taller) -->
+                    <div class="relative w-10 md:w-16 bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden border border-gray-200/10 p-1.5"
+                         :class="[isFullscreen ? 'min-h-[120px] flex-1' : 'h-40']">
+                        <div class="absolute inset-x-1.5 bottom-1.5 bg-gradient-to-t transition-all duration-1000 ease-out shadow-lg rounded-full"
                              :class="[
                                 index === 0 ? 'from-verde-cope to-green-500' : 
                                 index === 1 ? 'from-azul-cope to-blue-500' : 'from-gray-400 to-gray-500'
                              ]"
-                             :style="{ height: `calc(${(candidato.total_votos / maxVotes) * 100}% - 8px)` }">
+                             :style="{ height: `calc(${(candidato.total_votos / maxVotes) * 100}% - 12px)` }">
                              <!-- Subtle Glow -->
-                             <div class="absolute inset-x-0 top-0 h-16 bg-white/20 blur-md animate-pulse"></div>
+                             <div class="absolute inset-x-0 top-0 h-24 bg-white/20 blur-xl animate-pulse"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- 3. Candidate Name (Bottom) -->
-                <div class="mt-4 text-center w-full">
+                <div class="mt-6 text-center w-full">
                     <h4 class="font-black text-gray-900 dark:text-white uppercase tracking-tighter leading-tight"
-                        :class="[isFullscreen ? 'text-sm md:text-lg line-clamp-2 h-10 md:h-14' : 'text-sm truncate']">
+                        :class="[isFullscreen ? 'text-sm md:text-xl line-clamp-2 h-10 md:h-16' : 'text-sm truncate']">
                         {{ candidato.nombre_completo }}
                     </h4>
-                    <div v-if="index === 0" class="mt-1">
-                        <span class="px-2 py-0.5 bg-verde-cope/20 text-verde-cope text-[10px] font-black rounded-lg uppercase tracking-widest border border-verde-cope/20">
-                            Líder
+                    <div v-if="index === 0" class="mt-2">
+                        <span class="px-3 py-1 bg-verde-cope/20 text-verde-cope text-[11px] font-black rounded-xl uppercase tracking-widest border border-verde-cope/20">
+                            🏆 Líder Actual
                         </span>
                     </div>
                 </div>
@@ -281,7 +281,7 @@ onMounted(() => {
 
 /* Estilo específico para pantalla completa */
 :fullscreen {
-    padding: 2.5rem;
+    padding: 3rem;
     overflow: hidden;
     background: #ffffff;
     border-radius: 0px !important;
