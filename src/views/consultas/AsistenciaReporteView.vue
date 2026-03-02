@@ -62,6 +62,8 @@
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Fecha / Hora</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Código</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Asociado</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Edad</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Género</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">DPI / CUI</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Ubicación</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">Tipo</th>
@@ -69,7 +71,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                     <tr v-if="loading" v-for="i in 5" :key="i" class="animate-pulse">
-                        <td colspan="6" class="px-6 py-4"><div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div></td>
+                        <td colspan="8" class="px-6 py-4"><div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div></td>
                     </tr>
                     <tr v-else v-for="item in asistencias" :key="item.id" class="hover:bg-gray-50/50 dark:hover:bg-gray-900/30 transition-colors">
                         <td class="px-6 py-4">
@@ -83,6 +85,18 @@
                         </td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
                             {{ item.nombre_completo }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900 dark:text-white font-bold">
+                            {{ item.edad || '-' }}
+                        </td>
+                        <td class="px-6 py-4 text-xs font-medium">
+                            <span v-if="item.genero" :class="[
+                                'px-2 py-0.5 rounded-md uppercase tracking-tighter',
+                                item.genero === 'MASCULINO' ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20' : 'bg-pink-50 text-pink-600 dark:bg-pink-900/20'
+                            ]">
+                                {{ item.genero }}
+                            </span>
+                            <span v-else class="text-gray-400">-</span>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 font-mono">
                             {{ item.dpi }}
@@ -102,7 +116,7 @@
                         </td>
                     </tr>
                     <tr v-if="!loading && asistencias.length === 0">
-                        <td colspan="6" class="px-6 py-12 text-center">
+                        <td colspan="8" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center justify-center text-gray-400">
                                 <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
                                 <p class="text-lg font-bold">No se encontraron registros</p>
@@ -152,6 +166,8 @@ interface AsistenciaRegistro {
     dpi: string
     nombre_completo: string
     ubicacion: string
+    edad: number
+    genero: string
     fecha_asistencia: string
     tipo_asistencia: 'sistema' | 'manual'
 }
@@ -278,3 +294,7 @@ onMounted(() => {
     fetchData()
 })
 </script>
+
+<style scoped>
+/* No specific scoped styles needed */
+</style>

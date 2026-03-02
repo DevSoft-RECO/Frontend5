@@ -168,6 +168,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 
 interface ClientPersonal {
     codigo_cliente: number
@@ -205,8 +206,6 @@ const loading = ref(false)
 const error = ref('')
 const verifying = ref(false)
 
-import Swal from 'sweetalert2'
-
 const handleSearch = async () => {
     if (!searchQuery.value) return
     
@@ -224,7 +223,6 @@ const handleSearch = async () => {
         }
     } catch (err: any) {
         if (err.response && err.response.status === 404) {
-            // error.value = 'No se encontró ningún registro con el valor proporcionado.'
             Swal.fire({
                 title: 'No se encontraron registros',
                 text: 'La persona no se encuentra en los registros. ¿Posee código de cliente?',
@@ -254,20 +252,36 @@ const handleManualRegistration = async () => {
         title: 'Registro de Asistencia Manual',
         html: `
             <div class="space-y-4 py-2">
-                <div class="text-left">
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Código de Cliente</label>
-                    <input id="swal-codigo" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Ej. 1675931">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-left">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Código de Cliente</label>
+                        <input id="swal-codigo" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Ej. 1675931">
+                    </div>
+                    <div class="text-left">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">DPI / CUI</label>
+                        <input id="swal-dpi" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="DPI">
+                    </div>
                 </div>
                 <div class="text-left">
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">DPI / CUI</label>
-                    <input id="swal-dpi" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Ej. 1234 56789 0101">
-                </div>
-                <div class="text-left">
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre Completo</label>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Nombre Completo</label>
                     <input id="swal-nombre" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Nombre y Apellidos">
                 </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-left">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Edad</label>
+                        <input id="swal-edad" type="number" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Edad">
+                    </div>
+                    <div class="text-left">
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Género</label>
+                        <select id="swal-genero" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope">
+                             <option value="">Seleccione...</option>
+                             <option value="MASCULINO">Masculino</option>
+                             <option value="FEMENINO">Femenino</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="text-left">
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Ubicación</label>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Ubicación</label>
                     <input id="swal-ubicacion" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Municipio, Departamento">
                 </div>
             </div>
@@ -283,13 +297,22 @@ const handleManualRegistration = async () => {
             const dpi = (document.getElementById('swal-dpi') as HTMLInputElement).value
             const nombre = (document.getElementById('swal-nombre') as HTMLInputElement).value
             const ubicacion = (document.getElementById('swal-ubicacion') as HTMLInputElement).value
+            const edad = (document.getElementById('swal-edad') as HTMLInputElement).value
+            const genero = (document.getElementById('swal-genero') as HTMLSelectElement).value
 
-            if (!codigo || !dpi || !nombre || !ubicacion) {
+            if (!codigo || !dpi || !nombre || !ubicacion || !edad || !genero) {
                 Swal.showValidationMessage('Todos los campos son obligatorios')
                 return false
             }
 
-            return { codigo_cliente: codigo, dpi, nombre_completo: nombre, ubicacion }
+            return { 
+                codigo_cliente: codigo, 
+                dpi, 
+                nombre_completo: nombre, 
+                ubicacion,
+                edad,
+                genero
+            }
         }
     })
 
@@ -388,7 +411,10 @@ const handleVerify = async () => {
                                 codigo_cliente: result.value?.personal.codigo_cliente,
                                 dpi: result.value?.personal.dpi,
                                 nombre_completo: [result.value?.personal.nombre1, result.value?.personal.nombre2, result.value?.personal.nombre3, result.value?.personal.apellido1, result.value?.personal.apellido2].filter(Boolean).join(' '),
-                                ubicacion: `${result.value?.personal.muni_domicilio}, ${result.value?.personal.depto_domicilio}`
+                                ubicacion: `${result.value?.personal.muni_domicilio}, ${result.value?.personal.depto_domicilio}`,
+                                // Optional: We could pass age/gender here to avoid the extra DB lookup on the server
+                                edad: result.value?.personal.edad,
+                                genero: result.value?.personal.genero
                             })
                             return confirmResponse.data
                         } catch (error: any) {
