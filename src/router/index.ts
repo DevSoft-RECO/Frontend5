@@ -141,7 +141,7 @@ router.beforeEach(async (to, _from) => {
                 `⛔ Acceso denegado: Usuario no tiene el permiso '${to.meta.permission}'.`
             )
 
-            window.location.href = `${motherAppUrl}/apps`
+            // window.location.href = `${motherAppUrl}/apps`
             return false
         }
 
@@ -154,7 +154,7 @@ router.beforeEach(async (to, _from) => {
                 `⛔ Acceso denegado: Usuario no tiene el rol '${to.meta.role}'.`
             )
 
-            window.location.href = `${motherAppUrl}/apps`
+            // window.location.href = `${motherAppUrl}/apps`
             return false
         }
     }
