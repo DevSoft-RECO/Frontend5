@@ -13,27 +13,107 @@
 
     <!-- Search Card -->
     <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
-        <div class="max-w-xl mx-auto space-y-4">
-            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 text-center">Ingrese DPI o Código de Cliente</label>
-            <div class="flex flex-col sm:flex-row gap-2">
-                <input v-model="searchQuery" 
-                       type="text" 
-                       placeholder="Ej. 1234567890101 o 1675931" 
-                       class="flex-1 rounded-xl border-gray-200 shadow-sm focus:border-verde-cope focus:ring focus:ring-verde-cope focus:ring-opacity-20 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all text-center"
-                       @keyup.enter="handleSearch"
-                >
-                <button @click="handleSearch" 
-                        :disabled="loading || !searchQuery"
-                        class="px-8 py-3 bg-verde-cope hover:bg-green-700 text-white rounded-xl font-bold shadow-lg shadow-green-500/20 disabled:opacity-50 transition-all flex items-center justify-center gap-2 group">
-                    <svg v-if="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <svg v-else class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <span>{{ loading ? 'Buscando...' : 'Consultar' }}</span>
+        <div class="max-w-2xl mx-auto space-y-6">
+            
+            <!-- Tabs -->
+            <div class="flex p-1 bg-gray-100 dark:bg-gray-700/50 rounded-xl max-w-sm mx-auto">
+                <button @click="activeTab = 'dpi'"
+                        :class="['flex-1 py-2 px-4 rounded-lg text-sm font-bold transition-all', activeTab === 'dpi' ? 'bg-white dark:bg-gray-800 text-verde-cope shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300']">
+                    Por DPI / Código
+                </button>
+                <button @click="activeTab = 'nombre'"
+                        :class="['flex-1 py-2 px-4 rounded-lg text-sm font-bold transition-all', activeTab === 'nombre' ? 'bg-white dark:bg-gray-800 text-verde-cope shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300']">
+                    Por Nombre
                 </button>
             </div>
+
+            <!-- Tab 1: DPI / Codigo -->
+            <div v-show="activeTab === 'dpi'" class="space-y-4 animate-in fade-in duration-300">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 text-center">Ingrese DPI o Código de Cliente</label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input v-model="searchQuery" 
+                           type="text" 
+                           placeholder="Ej. 1234567890101 o 1675931" 
+                           class="flex-1 rounded-xl border-gray-200 shadow-sm focus:border-verde-cope focus:ring focus:ring-verde-cope focus:ring-opacity-20 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all text-center"
+                           @keyup.enter="handleSearch"
+                    >
+                    <button @click="handleSearch" 
+                            :disabled="loading || !searchQuery"
+                            class="px-8 py-3 bg-verde-cope hover:bg-green-700 text-white rounded-xl font-bold shadow-lg shadow-green-500/20 disabled:opacity-50 transition-all flex items-center justify-center gap-2 group">
+                        <svg v-if="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <svg v-else class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <span>{{ loading ? 'Buscando...' : 'Consultar' }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 2: Nombre -->
+            <div v-show="activeTab === 'nombre'" class="space-y-4 animate-in fade-in duration-300">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 text-center">Ingrese el Nombre Completo</label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input v-model="searchNameQuery" 
+                           type="text" 
+                           placeholder="Ej. Juan Perez Lopez" 
+                           class="flex-1 rounded-xl border-gray-200 shadow-sm focus:border-verde-cope focus:ring focus:ring-verde-cope focus:ring-opacity-20 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all text-center"
+                           @keyup.enter="handleSearchName"
+                    >
+                    <button @click="handleSearchName" 
+                            :disabled="loading || searchNameQuery.length < 3"
+                            class="px-8 py-3 bg-azul-cope hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 disabled:opacity-50 transition-all flex items-center justify-center gap-2 group">
+                        <svg v-if="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <svg v-else class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <span>{{ loading ? 'Buscando...' : 'Buscar' }}</span>
+                    </button>
+                </div>
+                <p v-if="searchNameQuery.length > 0 && searchNameQuery.length < 3" class="text-xs text-orange-500 text-center">Ingrese al menos 3 caracteres</p>
+            </div>
+
             <p v-if="error" class="text-red-500 text-sm mt-4 text-center font-medium">{{ error }}</p>
+        </div>
+    </div>
+
+    <!-- Name Search Results List -->
+    <div v-if="nameResults.length > 0 && !result" class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700 animate-in slide-in-from-bottom-4 duration-500">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+            Resultados Coincidentes ({{ nameResults.length }})
+        </h3>
+        <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            <div v-for="client in nameResults" :key="client.personal.codigo_cliente"
+                 class="p-4 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-verde-cope/30 hover:bg-green-50/30 dark:hover:bg-green-900/10 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4">
+                
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-verde-cope/10 text-verde-cope flex items-center justify-center font-bold shrink-0">
+                        {{ client.personal.nombre1 ? client.personal.nombre1.charAt(0) : '?' }}
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-900 dark:text-white text-lg leading-tight mb-1">
+                            {{ [client.personal.nombre1, client.personal.nombre2, client.personal.nombre3, client.personal.apellido1, client.personal.apellido2].filter(Boolean).join(' ') }}
+                        </p>
+                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+                            <span class="flex items-center gap-1"><span class="font-bold">DPI:</span> {{ client.personal.dpi || 'N/A' }}</span>
+                            <span class="flex items-center gap-1"><span class="font-bold">Código:</span> {{ client.personal.codigo_cliente }}</span>
+                            <span class="flex items-center gap-1"><span class="font-bold">Ubicación:</span> {{ client.personal.muni_domicilio }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <button @click="selectNameResult(client)"
+                        class="px-4 py-2 bg-verde-cope/10 text-verde-cope hover:bg-verde-cope hover:text-white rounded-lg font-bold text-sm transition-colors border border-verde-cope/20 whitespace-nowrap">
+                    Verificar
+                </button>
+            </div>
+        </div>
+        <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 text-center">
+             <p class="text-xs text-gray-400 mb-3">¿No está en la lista la persona que busca?</p>
+             <button @click="handleManualRegistration()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-bold transition-colors">
+                Registrar Asistencia Manualmente
+             </button>
         </div>
     </div>
 
@@ -200,8 +280,11 @@ interface SearchResult {
     colocacion: ColocacionData | null
 }
 
+const activeTab = ref<'dpi' | 'nombre'>('dpi')
 const searchQuery = ref('')
+const searchNameQuery = ref('')
 const result = ref<SearchResult | null>(null)
+const nameResults = ref<SearchResult[]>([])
 const loading = ref(false)
 const error = ref('')
 const verifying = ref(false)
@@ -212,6 +295,7 @@ const handleSearch = async () => {
     loading.value = true
     error.value = ''
     result.value = null
+    nameResults.value = []
 
     try {
         const response = await axios.post('http://localhost:8004/api/clientes/search', {
@@ -245,6 +329,54 @@ const handleSearch = async () => {
     } finally {
         loading.value = false
     }
+}
+
+const handleSearchName = async () => {
+    if (searchNameQuery.value.length < 3) return
+    
+    loading.value = true
+    error.value = ''
+    result.value = null
+    nameResults.value = []
+
+    try {
+        const response = await axios.post('http://localhost:8004/api/clientes/search-name', {
+            query: searchNameQuery.value
+        })
+        
+        if (response.data.success) {
+            nameResults.value = response.data.data
+        }
+    } catch (err: any) {
+        if (err.response && err.response.status === 404) {
+            Swal.fire({
+                title: 'No se encontraron registros',
+                text: 'No se encontró a nadie con ese nombre. Verifique la escritura.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Registrar manualmente',
+                cancelButtonText: 'Volver',
+                confirmButtonColor: '#5eb301',
+                cancelButtonColor: '#6b7280',
+                customClass: { popup: 'rounded-3xl shadow-2xl' }
+            }).then((alertResult) => {
+                if (alertResult.isConfirmed) {
+                    handleManualRegistration()
+                }
+            })
+        } else {
+            error.value = 'Ocurrió un error al realizar la consulta. Intente nuevamente.'
+            console.error(err)
+        }
+    } finally {
+        loading.value = false
+    }
+}
+
+const selectNameResult = (client: SearchResult) => {
+    // Treat the selected list item exactly as if we searched for it by DPI/Code directly
+    result.value = client
+    nameResults.value = []
 }
 
 const handleManualRegistration = async (isForcedByMora = false) => {
@@ -456,7 +588,9 @@ const handleVerify = async () => {
                             customClass: { popup: 'rounded-3xl shadow-2xl' }
                         }).then(() => {
                             searchQuery.value = '';
+                            searchNameQuery.value = '';
                             result.value = null;
+                            nameResults.value = [];
                         })
                     }
                 })
