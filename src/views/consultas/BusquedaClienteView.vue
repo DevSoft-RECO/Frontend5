@@ -486,7 +486,9 @@ const handleManualRegistration = async (isForcedByMora = false) => {
                     customClass: { popup: 'rounded-3xl shadow-2xl' }
                 }).then(() => {
                     searchQuery.value = '';
+                    searchNameQuery.value = '';
                     result.value = null;
+                    nameResults.value = [];
                 })
             }
         } catch (error: any) {
