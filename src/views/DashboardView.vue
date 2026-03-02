@@ -83,11 +83,11 @@
       </div>
 
       <div class="relative z-10" :class="[isFullscreen ? 'flex-1 flex flex-col' : '']">
-        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-8">
+        <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-6 mb-4">
             <div class="space-y-4">
                 <div>
-                   <h2 class="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Resultados Preliminares {{ stats.year }}</h2>
-                   <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Escrutinio consolidado de todas las mesas</p>
+                   <h2 class="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Resultados Asamblea {{ stats.year }}</h2>
+                   <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Total de votos de la Asamblea</p>
                 </div>
                 <!-- Enhanced Stats Badges (Enlarged) -->
                 <div class="flex flex-wrap gap-4">
@@ -118,7 +118,7 @@
                 </button>
                 <div class="px-5 py-3 bg-verde-cope/10 text-verde-cope rounded-2xl font-black text-xs uppercase shadow-sm border border-verde-cope/20 flex items-center gap-2">
                     <span class="w-3 h-3 rounded-full bg-verde-cope animate-pulse"></span>
-                    Sindicato En Vivo
+                    En Vivo
                 </div>
             </div>
         </div>
@@ -128,15 +128,15 @@
             <div v-for="(candidato, index) in sortedCandidatos" :key="candidato.id" 
                  :class="[
                     'group relative flex flex-col items-center transition-all hover:bg-gray-50 dark:hover:bg-gray-900/40 rounded-[40px] border border-transparent',
-                    isFullscreen ? 'flex-1 min-w-0 p-6' : 'w-56 shrink-0 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-4'
+                    isFullscreen ? 'flex-1 min-w-0 px-6 pt-4 pb-0' : 'w-56 shrink-0 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-4'
                  ]">
                 
                 <!-- 1. Candidate Photo (Top) -->
-                <div class="relative mb-6 shrink-0">
+                <div class="relative mb-4 shrink-0">
                     <img :src="candidato.foto_url || '/placeholder-user.png'" 
                          class="rounded-full object-cover border-4 transition-transform duration-500 group-hover:scale-105" 
                          :class="[
-                            isFullscreen ? 'w-24 h-24 md:w-40 md:h-40' : 'w-24 h-24',
+                            isFullscreen ? 'w-24 h-24 md:w-36 md:h-36' : 'w-24 h-24',
                             index === 0 ? 'border-verde-cope shadow-[0_0_30px_rgba(94,179,1,0.4)]' : 'border-white dark:border-gray-800 shadow-2xl'
                          ]"
                          alt="Avatar">
@@ -149,19 +149,19 @@
                 </div>
 
                 <!-- 2. Vertical Bar (Middle) -->
-                <div class="flex-1 w-full flex flex-col items-center justify-end px-4 gap-4">
+                <div class="flex-1 w-full flex flex-col items-center justify-end px-4 gap-2">
                     <!-- Vote Count (Above Bar) -->
                     <div class="text-center">
                         <span class="font-black text-gray-900 dark:text-white tabular-nums leading-none block"
                               :class="[isFullscreen ? 'text-3xl md:text-5xl' : 'text-3xl']">
                             {{ candidato.total_votos }}
                         </span>
-                        <span class="text-[12px] font-black text-gray-400 uppercase italic">Votos</span>
+                        <span class="text-[12px] font-black uppercase italic text-gray-600 dark:text-gray-400">Votos</span>
                     </div>
 
                     <!-- The Bar (Taller) -->
                     <div class="relative w-10 md:w-16 bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden border border-gray-200/10 p-1.5"
-                         :class="[isFullscreen ? 'min-h-[120px] flex-1' : 'h-40']">
+                         :class="[isFullscreen ? 'min-h-[160px] flex-1' : 'h-40']">
                         <div class="absolute inset-x-1.5 bottom-1.5 bg-gradient-to-t transition-all duration-1000 ease-out shadow-lg rounded-full"
                              :class="[
                                 index === 0 ? 'from-verde-cope to-green-500' : 
@@ -175,12 +175,12 @@
                 </div>
 
                 <!-- 3. Candidate Name (Bottom) -->
-                <div class="mt-6 text-center w-full">
+                <div class="mt-4 mb-2 text-center w-full">
                     <h4 class="font-black text-gray-900 dark:text-white uppercase tracking-tighter leading-tight"
                         :class="[isFullscreen ? 'text-sm md:text-xl line-clamp-2 h-10 md:h-16' : 'text-sm truncate']">
                         {{ candidato.nombre_completo }}
                     </h4>
-                    <div v-if="index === 0" class="mt-2">
+                    <div v-if="index === 0" class="mt-1">
                         <span class="px-3 py-1 bg-verde-cope/20 text-verde-cope text-[11px] font-black rounded-xl uppercase tracking-widest border border-verde-cope/20">
                             🏆 Líder Actual
                         </span>
@@ -267,39 +267,51 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style>
+/* Global styles for Fullscreen API */
+#results-container:fullscreen {
+  background-color: white !important;
+  padding: 3rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Force Dark Mode in Fullscreen */
+html.dark #results-container:fullscreen {
+  background-color: #0f172a !important;
+  color: white !important;
+}
+
+/* Specific overrides for nested elements in fullscreen dark mode */
+html.dark #results-container:fullscreen h2,
+html.dark #results-container:fullscreen h4,
+html.dark #results-container:fullscreen span.text-gray-900,
+html.dark #results-container:fullscreen .text-white {
+    color: white !important;
+}
+
+html.dark #results-container:fullscreen .text-gray-900 { color: #f9fafb !important; }
+html.dark #results-container:fullscreen .text-gray-600 { color: #d1d5db !important; }
+html.dark #results-container:fullscreen .bg-white { background-color: #1e293b !important; }
+html.dark #results-container:fullscreen .bg-gray-100 { background-color: #334155 !important; }
+
+/* Animation and Transitions */
 .transition-all {
     transition-property: all;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 1000ms;
 }
+</style>
 
-/* Vertical chart specific animations */
+<style scoped>
+/* Scoped component styles */
 @keyframes barGrow {
     from { height: 0; }
 }
 
-/* Estilo específico para pantalla completa */
-:fullscreen {
-    padding: 3rem;
-    overflow: hidden;
-    background: #ffffff;
-    border-radius: 0px !important;
-}
-
+/* Ensure the layout respects the container's height in fullscreen */
 :fullscreen #results-container {
     height: 100%;
-    margin: 0;
-    padding: 0;
-    border: none;
-    background: transparent;
-    box-shadow: none;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Force dark mode background in fullscreen if needed */
-.dark :fullscreen {
-    background: #0f172a;
 }
 </style>
