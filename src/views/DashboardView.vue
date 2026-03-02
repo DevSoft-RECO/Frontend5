@@ -115,7 +115,7 @@
         </div>
 
         <div class="space-y-6">
-            <div v-for="(candidato, index) in stats.candidatos" :key="candidato.id" 
+            <div v-for="(candidato, index) in sortedCandidatos" :key="candidato.id" 
                  class="group relative flex flex-col md:flex-row md:items-center gap-4 p-4 rounded-2xl transition-all hover:bg-gray-50 dark:hover:bg-gray-900/40">
                 
                 <!-- Candidate Info -->
@@ -130,7 +130,7 @@
                     </div>
                     <div class="min-w-0">
                         <h4 class="font-black text-gray-900 dark:text-white truncate leading-none mb-1">{{ candidato.nombre_completo }}</h4>
-                        <span class="text-[10px] font-black text-azul-cope uppercase tracking-tight">{{ candidato.urna_nombre }}</span>
+                        <span class="text-[10px] font-black text-azul-cope uppercase tracking-tight">Votos Totales (Todas las Mesas)</span>
                     </div>
                 </div>
 
@@ -174,6 +174,11 @@ const stats = ref<any>({
 })
 
 const lastUpdate = ref('')
+
+const sortedCandidatos = computed(() => {
+    if (!stats.value.candidatos) return []
+    return [...stats.value.candidatos].sort((a: any, b: any) => b.total_votos - a.total_votos)
+})
 
 const maxVotes = computed(() => {
     if (!stats.value.candidatos || stats.value.candidatos.length === 0) return 1

@@ -6,17 +6,17 @@
             Gestión de Urnas y Candidatos
         </h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Administración de centros de votación y registro de participantes con fotografía.
+            Administración de mesas de votación y registro de candidatos globales con fotografía.
         </p>
       </div>
       <div class="flex gap-2">
         <button @click="openUrnaModal()" 
-                class="px-4 py-2 bg-azul-cope hover:bg-blue-800 text-white rounded-xl font-bold shadow-lg transition-all flex items-center gap-2">
+                class="px-4 py-2 bg-azul-cope hover:bg-blue-800 text-white rounded-xl font-bold shadow-lg transition-all flex items-center gap-2 text-sm">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
             Nueva Urna
         </button>
         <button @click="openCandidatoModal()" 
-                class="px-4 py-2 bg-verde-cope hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition-all flex items-center gap-2">
+                class="px-4 py-2 bg-verde-cope hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition-all flex items-center gap-2 text-sm">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
             Nuevo Candidato
         </button>
@@ -25,11 +25,11 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Urnas Card -->
-      <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden h-fit">
         <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <h2 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <svg class="w-5 h-5 text-azul-cope" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                Listado de Urnas
+                Listado de Urnas (Mesas)
             </h2>
         </div>
         <div class="overflow-x-auto">
@@ -62,11 +62,11 @@
       </div>
 
       <!-- Candidatos Card -->
-      <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden h-fit">
         <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <h2 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <svg class="w-5 h-5 text-verde-cope" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                Listado de Candidatos
+                Listado de Candidatos Globales
             </h2>
         </div>
         <div class="overflow-x-auto">
@@ -75,7 +75,6 @@
                     <tr class="bg-gray-50/50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                         <th class="px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Perfil</th>
                         <th class="px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Nombre</th>
-                        <th class="px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider">Urna</th>
                         <th class="px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">Año</th>
                         <th class="px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Acciones</th>
                     </tr>
@@ -87,10 +86,7 @@
                                  class="w-10 h-10 rounded-full object-cover border-2 border-gray-100 dark:border-gray-700 shadow-sm"
                                  alt="Foto">
                         </td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-gray-100">{{ candidato.nombre_completo }}</td>
-                        <td class="px-6 py-4 text-sm">
-                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-md text-xs font-bold">{{ candidato.urna_nombre }}</span>
-                        </td>
+                        <td class="px-6 py-4 text-sm font-bold text-gray-900 dark:text-gray-100">{{ candidato.nombre_completo }}</td>
                         <td class="px-6 py-4 text-sm text-center font-mono font-bold">{{ candidato.anio }}</td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex justify-end gap-2">
@@ -139,12 +135,12 @@ const fetchCandidatos = async () => {
 
 const openUrnaModal = async (urna: any = null) => {
     const { value: formValues } = await Swal.fire({
-        title: urna ? 'Editar Urna' : 'Nueva Urna',
+        title: urna ? 'Editar Urna (Mesa)' : 'Nueva Urna (Mesa)',
         html: `
             <div class="space-y-4 py-2">
                 <div class="text-left">
                     <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Nombre de la Urna</label>
-                    <input id="swal-nombre" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Ej. URNA 1" value="${urna ? urna.nombre : ''}">
+                    <input id="swal-nombre" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Ej. MES Nº 1" value="${urna ? urna.nombre : ''}">
                 </div>
                 <div class="text-left">
                     <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Descripción (Opcional)</label>
@@ -187,7 +183,7 @@ const openUrnaModal = async (urna: any = null) => {
 const deleteUrna = async (id: number) => {
     const result = await Swal.fire({
         title: '¿Estás seguro?',
-        text: "Al eliminar la urna también se eliminarán sus candidatos asociados.",
+        text: "Se eliminarán los registros de votos asociados a esta urna.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ef4444',
@@ -201,7 +197,6 @@ const deleteUrna = async (id: number) => {
             await axios.delete(`http://localhost:8004/api/urnas/${id}`)
             Swal.fire('Eliminado', 'La urna ha sido eliminada.', 'success')
             fetchUrnas()
-            fetchCandidatos()
         } catch (error) {
             Swal.fire('Error', 'No se pudo eliminar la urna', 'error')
         }
@@ -209,11 +204,6 @@ const deleteUrna = async (id: number) => {
 }
 
 const openCandidatoModal = async (candidato: any = null) => {
-    if (urnas.value.length === 0) {
-        Swal.fire('Atención', 'Primero debe crear al menos una urna.', 'info')
-        return
-    }
-
     const { value: formValues } = await Swal.fire({
         title: candidato ? 'Editar Candidato' : 'Nuevo Candidato',
         html: `
@@ -221,12 +211,6 @@ const openCandidatoModal = async (candidato: any = null) => {
                 <div class="text-left">
                     <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Nombre Completo</label>
                     <input id="swal-nombre" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Nombre y Apellidos" value="${candidato ? candidato.nombre_completo : ''}">
-                </div>
-                <div class="text-left">
-                    <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Asignar Urna</label>
-                    <select id="swal-urna" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope">
-                        ${urnas.value.map(u => `<option value="${u.id}" ${candidato && candidato.urna_id === u.id ? 'selected' : ''}>${u.nombre}</option>`).join('')}
-                    </select>
                 </div>
                 <div class="text-left">
                     <label class="block text-xs font-bold text-gray-400 uppercase mb-2">Año de Participación</label>
@@ -246,23 +230,21 @@ const openCandidatoModal = async (candidato: any = null) => {
         customClass: { popup: 'rounded-3xl shadow-2xl' },
         preConfirm: () => {
             const nombre_completo = (document.getElementById('swal-nombre') as HTMLInputElement).value
-            const urna_id = (document.getElementById('swal-urna') as HTMLSelectElement).value
             const anio = (document.getElementById('swal-anio') as HTMLInputElement).value
             const fotoInput = (document.getElementById('swal-foto') as HTMLInputElement)
             const foto = fotoInput.files ? fotoInput.files[0] : null
 
-            if (!nombre_completo || !urna_id || !anio) {
-                Swal.showValidationMessage('Los campos obligatorios deben completarse')
+            if (!nombre_completo || !anio) {
+                Swal.showValidationMessage('El nombre y el año son obligatorios')
                 return false
             }
-            return { nombre_completo, urna_id, anio, foto }
+            return { nombre_completo, anio, foto }
         }
     })
 
     if (formValues) {
         const formData = new FormData()
         formData.append('nombre_completo', formValues.nombre_completo)
-        formData.append('urna_id', formValues.urna_id)
         formData.append('anio', formValues.anio)
         if (formValues.foto) {
             formData.append('foto', formValues.foto)
@@ -270,7 +252,6 @@ const openCandidatoModal = async (candidato: any = null) => {
 
         try {
             if (candidato) {
-                // Laravel hack para PUT con FormData y archivos
                 formData.append('_method', 'PUT')
                 await axios.post(`http://localhost:8004/api/candidatos/${candidato.id}`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
@@ -280,10 +261,10 @@ const openCandidatoModal = async (candidato: any = null) => {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 })
             }
-            Swal.fire('¡Éxito!', 'Los datos se guardaron correctamente', 'success')
+            Swal.fire('¡Éxito!', 'Candidato guardado', 'success')
             fetchCandidatos()
         } catch (error) {
-            Swal.fire('Error', 'No se pudo guardar la información del candidato', 'error')
+            Swal.fire('Error', 'No se pudo guardar el candidato', 'error')
         }
     }
 }
@@ -291,7 +272,7 @@ const openCandidatoModal = async (candidato: any = null) => {
 const deleteCandidato = async (id: number) => {
     const result = await Swal.fire({
         title: '¿Estás seguro?',
-        text: "Esta acción eliminará el registro y la foto del candidato.",
+        text: "Se eliminarán todos los resultados de votos para este candidato.",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ef4444',
@@ -303,7 +284,7 @@ const deleteCandidato = async (id: number) => {
     if (result.isConfirmed) {
         try {
             await axios.delete(`http://localhost:8004/api/candidatos/${id}`)
-            Swal.fire('Eliminado', 'El candidato ha sido eliminado.', 'success')
+            Swal.fire('Eliminado', 'Candidato eliminado.', 'success')
             fetchCandidatos()
         } catch (error) {
             Swal.fire('Error', 'No se pudo eliminar el candidato', 'error')
