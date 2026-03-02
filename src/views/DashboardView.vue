@@ -142,8 +142,7 @@
                          alt="Avatar">
                     
                     <!-- Rank Badge -->
-                    <div class="absolute -top-3 -right-3 w-10 h-10 md:w-14 md:h-14 text-white text-xl font-black flex items-center justify-center rounded-2xl shadow-2xl border-4 border-white dark:border-gray-800"
-                         :class="index === 0 ? 'bg-verde-cope' : 'bg-azul-cope'">
+                    <div class="absolute -top-3 -right-3 w-10 h-10 md:w-14 md:h-14 text-white text-xl font-black flex items-center justify-center rounded-2xl shadow-2xl border-4 border-white dark:border-gray-800 bg-azul-cope">
                         {{ index + 1 }}
                     </div>
                 </div>
@@ -162,11 +161,7 @@
                     <!-- The Bar (Taller) -->
                     <div class="relative w-10 md:w-16 bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden border border-gray-200/10 p-1.5"
                          :class="[isFullscreen ? 'min-h-[160px] flex-1' : 'h-40']">
-                        <div class="absolute inset-x-1.5 bottom-1.5 bg-gradient-to-t transition-all duration-1000 ease-out shadow-lg rounded-full"
-                             :class="[
-                                index === 0 ? 'from-verde-cope to-green-500' : 
-                                index === 1 ? 'from-azul-cope to-blue-500' : 'from-gray-400 to-gray-500'
-                             ]"
+                        <div class="absolute inset-x-1.5 bottom-1.5 bg-gradient-to-t transition-all duration-1000 ease-out shadow-lg rounded-full from-azul-cope to-blue-500"
                              :style="{ height: `calc(${(candidato.total_votos / maxVotes) * 100}% - 12px)` }">
                              <!-- Subtle Glow -->
                              <div class="absolute inset-x-0 top-0 h-24 bg-white/20 blur-xl animate-pulse"></div>
@@ -180,11 +175,6 @@
                         :class="[isFullscreen ? 'text-sm md:text-xl line-clamp-2 h-10 md:h-16' : 'text-sm truncate']">
                         {{ candidato.nombre_completo }}
                     </h4>
-                    <div v-if="index === 0" class="mt-1">
-                        <span class="px-3 py-1 bg-verde-cope/20 text-verde-cope text-[11px] font-black rounded-xl uppercase tracking-widest border border-verde-cope/20">
-                            🏆 Líder Actual
-                        </span>
-                    </div>
                 </div>
             </div>
         </div>
