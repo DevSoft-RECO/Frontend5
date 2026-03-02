@@ -13,38 +13,28 @@
 
     <!-- Search Card -->
     <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
-        <div class="max-w-2xl mx-auto flex flex-col md:flex-row gap-4">
-            <div class="w-full md:w-1/3">
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Buscar por</label>
-                <select v-model="searchField" 
-                        class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope focus:ring focus:ring-verde-cope focus:ring-opacity-20 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all">
-                    <option value="dpi">DPI / CUI</option>
-                    <option value="codigo_cliente">Código de Cliente</option>
-                </select>
+        <div class="max-w-xl mx-auto space-y-4">
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 text-center">Ingrese DPI o Código de Cliente</label>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <input v-model="searchQuery" 
+                       type="text" 
+                       placeholder="Ej. 1234567890101 o 1675931" 
+                       class="flex-1 rounded-xl border-gray-200 shadow-sm focus:border-verde-cope focus:ring focus:ring-verde-cope focus:ring-opacity-20 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all text-center"
+                       @keyup.enter="handleSearch"
+                >
+                <button @click="handleSearch" 
+                        :disabled="loading || !searchQuery"
+                        class="px-8 py-3 bg-verde-cope hover:bg-green-700 text-white rounded-xl font-bold shadow-lg shadow-green-500/20 disabled:opacity-50 transition-all flex items-center justify-center gap-2 group">
+                    <svg v-if="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <svg v-else class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <span>{{ loading ? 'Buscando...' : 'Consultar' }}</span>
+                </button>
             </div>
-            
-            <div class="flex-1">
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Valor de búsqueda</label>
-                <div class="flex gap-2">
-                    <input v-model="searchQuery" 
-                           type="text" 
-                           :placeholder="searchField === 'dpi' ? 'Ej. 1234567890101' : 'Ej. 1675931'" 
-                           class="flex-1 rounded-xl border-gray-200 shadow-sm focus:border-verde-cope focus:ring focus:ring-verde-cope focus:ring-opacity-20 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all"
-                           @keyup.enter="handleSearch"
-                    >
-                    <button @click="handleSearch" 
-                            :disabled="loading || !searchQuery"
-                            class="px-6 py-2 bg-verde-cope hover:bg-green-700 text-white rounded-xl font-bold shadow-lg shadow-green-500/20 disabled:opacity-50 transition-all flex items-center gap-2">
-                        <svg v-if="loading" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span>{{ loading ? 'Buscando...' : 'Consultar' }}</span>
-                    </button>
-                </div>
-            </div>
+            <p v-if="error" class="text-red-500 text-sm mt-4 text-center font-medium">{{ error }}</p>
         </div>
-        <p v-if="error" class="text-red-500 text-sm mt-4 text-center font-medium">{{ error }}</p>
     </div>
 
     <div v-if="result" class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom-4 duration-500">
@@ -209,7 +199,6 @@ interface SearchResult {
     colocacion: ColocacionData | null
 }
 
-const searchField = ref<'dpi' | 'codigo_cliente'>('dpi')
 const searchQuery = ref('')
 const result = ref<SearchResult | null>(null)
 const loading = ref(false)
@@ -227,7 +216,6 @@ const handleSearch = async () => {
 
     try {
         const response = await axios.post('http://localhost:8004/api/clientes/search', {
-            field: searchField.value,
             query: searchQuery.value
         })
         
