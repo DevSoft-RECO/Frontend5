@@ -196,6 +196,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted } from 'vue'
 import axios from 'axios'
+import { echo } from '@/plugins/echo'
 
 const stats = ref<any>({
   total: 0,
@@ -257,12 +258,16 @@ onMounted(() => {
   
   document.addEventListener('fullscreenchange', handleFullscreenChange);
   
-  // Refrescar cada 10 segundos
-  const interval = setInterval(fetchStats, 10000);
+  // Escuchar actualizaciones en tiempo real vía Reverb
+  echo.channel('votes-channel')
+      .listen('VotesUpdated', (e: any) => {
+          console.log('Actualización de votos recibida:', e.stats);
+          fetchStats(); // Recargar datos al recibir actualización
+      });
   
   onUnmounted(() => {
-    clearInterval(interval);
     document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    echo.leaveChannel('votes-channel');
   });
 })
 </script>
