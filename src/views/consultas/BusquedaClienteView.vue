@@ -224,13 +224,97 @@ const handleSearch = async () => {
         }
     } catch (err: any) {
         if (err.response && err.response.status === 404) {
-            error.value = 'No se encontró ningún registro con el valor proporcionado.'
+            // error.value = 'No se encontró ningún registro con el valor proporcionado.'
+            Swal.fire({
+                title: 'No se encontraron registros',
+                text: 'La persona no se encuentra en los registros. ¿Posee código de cliente?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, registrar manualmente',
+                cancelButtonText: 'No',
+                confirmButtonColor: '#5eb301',
+                cancelButtonColor: '#6b7280',
+                customClass: { popup: 'rounded-3xl shadow-2xl' }
+            }).then((alertResult) => {
+                if (alertResult.isConfirmed) {
+                    handleManualRegistration()
+                }
+            })
         } else {
             error.value = 'Ocurrió un error al realizar la consulta. Intente nuevamente.'
             console.error(err)
         }
     } finally {
         loading.value = false
+    }
+}
+
+const handleManualRegistration = async () => {
+    const { value: formValues } = await Swal.fire({
+        title: 'Registro de Asistencia Manual',
+        html: `
+            <div class="space-y-4 py-2">
+                <div class="text-left">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Código de Cliente</label>
+                    <input id="swal-codigo" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Ej. 1675931">
+                </div>
+                <div class="text-left">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">DPI / CUI</label>
+                    <input id="swal-dpi" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Ej. 1234 56789 0101">
+                </div>
+                <div class="text-left">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nombre Completo</label>
+                    <input id="swal-nombre" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Nombre y Apellidos">
+                </div>
+                <div class="text-left">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Ubicación</label>
+                    <input id="swal-ubicacion" class="w-full rounded-xl border-gray-200 shadow-sm focus:border-verde-cope" placeholder="Municipio, Departamento">
+                </div>
+            </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar Asistencia',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#5eb301',
+        customClass: { popup: 'rounded-3xl shadow-2xl' },
+        preConfirm: () => {
+            const codigo = (document.getElementById('swal-codigo') as HTMLInputElement).value
+            const dpi = (document.getElementById('swal-dpi') as HTMLInputElement).value
+            const nombre = (document.getElementById('swal-nombre') as HTMLInputElement).value
+            const ubicacion = (document.getElementById('swal-ubicacion') as HTMLInputElement).value
+
+            if (!codigo || !dpi || !nombre || !ubicacion) {
+                Swal.showValidationMessage('Todos los campos son obligatorios')
+                return false
+            }
+
+            return { codigo_cliente: codigo, dpi, nombre_completo: nombre, ubicacion }
+        }
+    })
+
+    if (formValues) {
+        verifying.value = true
+        try {
+            const response = await axios.post('http://localhost:8004/api/asistencia/confirmar', {
+                ...formValues,
+                tipo_asistencia: 'manual'
+            })
+
+            if (response.data.success) {
+                Swal.fire({
+                    title: '¡Asistencia Registrada!',
+                    text: 'El registro manual se ha grabado exitosamente.',
+                    icon: 'success',
+                    confirmButtonColor: '#5eb301',
+                    customClass: { popup: 'rounded-3xl shadow-2xl' }
+                })
+            }
+        } catch (error: any) {
+            Swal.fire('Error', error.response?.data?.message || 'No se pudo realizar el registro manual', 'error')
+        } finally {
+            verifying.value = false
+        }
     }
 }
 
