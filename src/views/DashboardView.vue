@@ -74,8 +74,7 @@
     </div>
 
     <!-- Resultados Electorales Section -->
-    <div v-if="stats.candidatos && stats.candidatos.length > 0" 
-         id="results-container"
+    <div id="results-container"
          class="bg-white dark:bg-gray-800 p-8 rounded-[32px] shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden relative transition-all duration-500">
       <!-- Decorative Background -->
       <div class="absolute top-0 right-0 p-8 opacity-5">
@@ -125,21 +124,51 @@
 
         <!-- Vertical Chart Layout (Optimized for no-scroll) -->
         <div :class="[isFullscreen ? 'flex-1 flex gap-6 pb-2 items-stretch' : 'flex flex-wrap gap-4 overflow-x-auto pb-4']">
-            <div v-for="(candidato, index) in sortedCandidatos" :key="candidato.id" 
-                 :class="[
-                    'group relative flex flex-col items-center transition-all hover:bg-gray-50 dark:hover:bg-gray-900/40 rounded-[40px] border border-transparent',
-                    isFullscreen ? 'flex-1 min-w-0 px-6 pt-4 pb-0' : 'w-56 shrink-0 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-4'
-                 ]">
-                
-                <!-- 1. Candidate Photo (Top) -->
-                <div class="relative mb-4 shrink-0">
-                    <img :src="candidato.foto_url || '/placeholder-user.png'" 
-                         class="rounded-full object-cover border-4 transition-transform duration-500 group-hover:scale-105" 
-                         :class="[
-                            isFullscreen ? 'w-24 h-24 md:w-36 md:h-36' : 'w-24 h-24',
-                            index === 0 ? 'border-verde-cope shadow-[0_0_30px_rgba(94,179,1,0.4)]' : 'border-white dark:border-gray-800 shadow-2xl'
-                         ]"
-                         alt="Avatar">
+            
+            <!-- SKELETON LOADER (Facebook Style) -->
+            <template v-if="isLoading">
+                <div v-for="i in 5" :key="'skel-'+i" 
+                     :class="[
+                        'group relative flex flex-col items-center transition-all bg-gray-50 dark:bg-gray-900/20 rounded-[40px]',
+                        isFullscreen ? 'flex-1 min-w-0 px-6 pt-4 pb-0' : 'w-56 shrink-0 border-gray-100 dark:border-gray-700 shadow-sm p-4'
+                     ]">
+                     <!-- Avatar Skeleton -->
+                     <div class="relative mb-4 shrink-0">
+                         <div class="rounded-full bg-gray-200 dark:bg-gray-700 animate-[pulse_1.5s_ease-in-out_infinite]"
+                              :class="[isFullscreen ? 'w-24 h-24 md:w-36 md:h-36' : 'w-24 h-24']"></div>
+                     </div>
+                     <!-- Bar/Text Skeleton -->
+                     <div class="flex-1 w-full flex flex-col items-center justify-end px-4 gap-2">
+                         <div class="w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+                         <div class="relative w-10 md:w-16 bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden border border-gray-200/10 p-1.5"
+                              :class="[isFullscreen ? 'min-h-[160px] flex-1' : 'h-40']">
+                              <div class="absolute inset-x-1.5 bottom-1.5 bg-gray-200 dark:bg-gray-600 rounded-full h-1/3 animate-[pulse_1.5s_ease-in-out_infinite_0.5s]"></div>
+                         </div>
+                     </div>
+                     <!-- Name Skeleton -->
+                     <div class="mt-4 mb-2 w-full flex justify-center">
+                         <div class="w-3/4 h-5 bg-gray-200 dark:bg-gray-700 rounded animate-[pulse_1.5s_ease-in-out_infinite]"></div>
+                     </div>
+                </div>
+            </template>
+
+            <!-- ACTUAL CANDIDATES -->
+            <template v-else-if="sortedCandidatos.length > 0">
+                <div v-for="(candidato, index) in sortedCandidatos" :key="candidato.id" 
+                     :class="[
+                        'group relative flex flex-col items-center transition-all hover:bg-gray-50 dark:hover:bg-gray-900/40 rounded-[40px] border border-transparent',
+                        isFullscreen ? 'flex-1 min-w-0 px-6 pt-4 pb-0' : 'w-56 shrink-0 border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-4'
+                     ]">
+                    
+                    <!-- 1. Candidate Photo (Top) -->
+                    <div class="relative mb-4 shrink-0">
+                        <img :src="candidato.foto_url || '/placeholder-user.png'" 
+                             class="rounded-full object-cover border-4 transition-transform duration-500 group-hover:scale-105" 
+                             :class="[
+                                isFullscreen ? 'w-24 h-24 md:w-36 md:h-36' : 'w-24 h-24',
+                                index === 0 ? 'border-verde-cope shadow-[0_0_30px_rgba(94,179,1,0.4)]' : 'border-white dark:border-gray-800 shadow-2xl'
+                             ]"
+                             alt="Avatar">
                     
                     <!-- Rank Badge -->
                     <div class="absolute -top-3 -right-3 w-10 h-10 md:w-14 md:h-14 text-white text-xl font-black flex items-center justify-center rounded-2xl shadow-2xl border-4 border-white dark:border-gray-800 bg-azul-cope">
@@ -176,7 +205,14 @@
                         {{ candidato.nombre_completo }}
                     </h4>
                 </div>
-            </div>
+                </div>
+            </template>
+            <!-- EMPTY STATE -->
+            <template v-else>
+                <div class="w-full flex justify-center py-12 text-gray-400">
+                    No hay candidatos registrados para la asamblea.
+                </div>
+            </template>
         </div>
       </div>
     </div>
@@ -202,6 +238,7 @@ const stats = ref<any>({
 
 const lastUpdate = ref('')
 const isFullscreen = ref(false)
+const isLoading = ref(true)
 
 const sortedCandidatos = computed(() => {
     if (!stats.value.candidatos) return []
@@ -215,6 +252,7 @@ const maxVotes = computed(() => {
 })
 
 const fetchStats = async () => {
+  isLoading.value = true
   try {
     const response = await axios.get('http://localhost:8004/api/dashboard/stats')
     if (response.data.success) {
@@ -223,6 +261,8 @@ const fetchStats = async () => {
     }
   } catch (error) {
     console.error('Error fetching dashboard stats:', error)
+  } finally {
+    isLoading.value = false
   }
 }
 
