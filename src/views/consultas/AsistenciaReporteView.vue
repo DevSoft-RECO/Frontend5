@@ -53,9 +53,11 @@
         </div>
     </div>
 
-    <!-- Results Table -->
+    <!-- Results Container -->
     <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
-        <div class="overflow-x-auto">
+        
+        <!-- Desktop Table View -->
+        <div class="hidden lg:block overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-gray-50/50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
@@ -67,6 +69,7 @@
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">DPI / CUI</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Ubicación</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">Tipo</th>
+                        <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Observación</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -114,9 +117,12 @@
                                 {{ item.tipo_asistencia }}
                             </span>
                         </td>
+                        <td class="px-6 py-4 text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]" :title="item.observacion || ''">
+                            {{ item.observacion || '-' }}
+                        </td>
                     </tr>
                     <tr v-if="!loading && asistencias.length === 0">
-                        <td colspan="8" class="px-6 py-12 text-center">
+                        <td colspan="9" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center justify-center text-gray-400">
                                 <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
                                 <p class="text-lg font-bold">No se encontraron registros</p>
@@ -126,6 +132,78 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <!-- Mobile List View -->
+        <div class="block lg:hidden divide-y divide-gray-100 dark:divide-gray-700">
+            <!-- Skeleton mobile -->
+            <template v-if="loading">
+                <div v-for="i in 5" :key="'mob-skel-'+i" class="p-5 animate-pulse space-y-3">
+                    <div class="flex justify-between">
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+                    </div>
+                    <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                    <div class="grid grid-cols-2 gap-2 pt-2">
+                        <div class="h-8 bg-gray-100 dark:bg-gray-800 rounded"></div>
+                        <div class="h-8 bg-gray-100 dark:bg-gray-800 rounded"></div>
+                    </div>
+                </div>
+            </template>
+            
+            <!-- Empty state mobile -->
+            <template v-else-if="asistencias.length === 0">
+                <div class="p-12 text-center flex flex-col items-center justify-center text-gray-400">
+                    <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                    <p class="font-bold">No se encontraron registros</p>
+                </div>
+            </template>
+            
+            <!-- Cards mobile -->
+            <template v-else>
+                <div v-for="item in asistencias" :key="'mob-'+item.id" class="p-5 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="pr-2">
+                            <h3 class="text-sm font-bold text-gray-900 dark:text-white leading-tight mb-1">{{ item.nombre_completo }}</h3>
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-[10px] font-bold border border-blue-200 dark:border-blue-800">Cód: {{ item.codigo_cliente }}</span>
+                                <span class="text-[11px] text-gray-500 font-mono">{{ item.dpi }}</span>
+                            </div>
+                        </div>
+                        <span :class="[
+                            'px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-tighter shrink-0 border',
+                            item.tipo_asistencia === 'sistema' 
+                                ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:border-green-800/50' 
+                                : 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:border-orange-800/50'
+                        ]">
+                            {{ item.tipo_asistencia }}
+                        </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mt-4 bg-gray-50/50 dark:bg-gray-800/50 p-3 rounded-xl border border-gray-100 dark:border-gray-700 flex-wrap">
+                        <div>
+                            <span class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Fecha y Hora</span>
+                            <div class="text-xs text-gray-700 dark:text-gray-300">
+                                <span class="font-bold">{{ formatDate(item.fecha_asistencia) }}</span><br>
+                                <span class="text-[11px]">{{ formatTime(item.fecha_asistencia) }}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Ubicación</span>
+                            <span class="text-xs text-gray-700 dark:text-gray-300 truncate block">{{ item.ubicacion }}</span>
+                        </div>
+                        <div class="col-span-2 flex items-center gap-3 pt-2 mt-1 border-t border-gray-200 dark:border-gray-700/50">
+                            <div v-if="item.edad" class="text-xs text-gray-600 dark:text-gray-400"><span class="font-bold text-gray-900 dark:text-white">{{ item.edad }}</span> años</div>
+                            <div v-if="item.genero" class="text-[10px] uppercase text-gray-500 font-bold bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm">{{ item.genero }}</div>
+                        </div>
+                    </div>
+                    
+                    <div v-if="item.observacion" class="mt-3 text-xs bg-yellow-50 dark:bg-yellow-900/10 text-yellow-800 dark:text-yellow-500 p-2.5 rounded-lg border border-yellow-100 dark:border-yellow-900/30 flex gap-2 items-start">
+                        <svg class="w-4 h-4 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p class="leading-relaxed">{{ item.observacion }}</p>
+                    </div>
+                </div>
+            </template>
         </div>
 
         <!-- Pagination -->
@@ -170,6 +248,7 @@ interface AsistenciaRegistro {
     genero: string
     fecha_asistencia: string
     tipo_asistencia: 'sistema' | 'manual'
+    observacion?: string
 }
 
 interface PaginationData {
