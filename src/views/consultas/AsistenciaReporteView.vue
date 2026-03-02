@@ -41,6 +41,13 @@
                             class="px-6 py-2 bg-verde-cope hover:bg-green-700 text-white rounded-xl font-bold shadow-lg shadow-green-500/20 transition-all flex items-center gap-2">
                         <span>Consultar</span>
                     </button>
+                    <button @click="handleDownload" 
+                            :disabled="exporting"
+                            class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2 disabled:opacity-50">
+                        <svg v-if="!exporting" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span>{{ exporting ? 'Exportando...' : 'Descargar CSV' }}</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -160,6 +167,7 @@ interface PaginationData {
 }
 
 const loading = ref(false)
+const exporting = ref(false)
 const asistencias = ref<AsistenciaRegistro[]>([])
 const searchQuery = ref('')
 const selectedYear = ref(new Date().getFullYear())
@@ -203,6 +211,28 @@ const fetchData = async (page = 1) => {
         console.error('Error fetching asistencias:', error)
     } finally {
         loading.value = false
+    }
+}
+
+const handleDownload = async () => {
+    exporting.value = true
+    try {
+        const response = await axios.get('http://localhost:8004/api/asistencia/export', {
+            params: { year: selectedYear.value },
+            responseType: 'blob'
+        })
+        
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `asistencias_${selectedYear.value}.csv`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    } catch (error) {
+        console.error('Error downloading CSV:', error)
+    } finally {
+        exporting.value = false
     }
 }
 
