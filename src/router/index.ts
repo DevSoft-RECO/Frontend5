@@ -134,8 +134,8 @@ router.beforeEach(async (to, _from) => {
 
         // Verificar permiso
         if (to.meta.permission && !authStore.hasPermission(to.meta.permission)) {
-            const motherAppUrl =
-                import.meta.env.VITE_MOTHER_APP_URL || 'http://localhost:5173'
+            // const motherAppUrl =
+            //     import.meta.env.VITE_MOTHER_APP_URL || 'http://localhost:5173'
 
             console.warn(
                 `⛔ Acceso denegado: Usuario no tiene el permiso '${to.meta.permission}'.`
@@ -147,8 +147,8 @@ router.beforeEach(async (to, _from) => {
 
         // Verificar rol
         if (to.meta.role && !authStore.hasRole(to.meta.role)) {
-            const motherAppUrl =
-                import.meta.env.VITE_MOTHER_APP_URL || 'http://localhost:5173'
+            // const motherAppUrl =
+            //     import.meta.env.VITE_MOTHER_APP_URL || 'http://localhost:5173'
 
             console.warn(
                 `⛔ Acceso denegado: Usuario no tiene el rol '${to.meta.role}'.`
