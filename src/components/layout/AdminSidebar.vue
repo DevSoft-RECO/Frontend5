@@ -1,9 +1,9 @@
 <template>
   <Transition
-    enter-active-class="transition-opacity duration-300"
+    enter-active-class="transition-opacity duration-150"
     enter-from-class="opacity-0"
     enter-to-class="opacity-100"
-    leave-active-class="transition-opacity duration-300"
+    leave-active-class="transition-opacity duration-150"
     leave-from-class="opacity-100"
     leave-to-class="opacity-0"
   >
@@ -15,7 +15,7 @@
   </Transition>
 
   <aside
-    class="fixed inset-y-0 left-0 z-50 flex flex-col transition-all duration-300 shadow-2xl
+    class="fixed inset-y-0 left-0 z-50 flex flex-col transition-all duration-150 shadow-2xl
            bg-azul-cope dark:bg-gray-900
            border-r border-transparent dark:border-gray-800"
     :class="[
@@ -45,7 +45,7 @@
             <RouterLink
             :to="item.route"
             @click="handleItemClick"
-            class="flex items-center px-3 py-3 rounded-lg transition-all duration-200 group border-l-4"
+            class="flex items-center px-3 py-3 rounded-lg transition-all duration-150 group border-l-4"
             :class="[
                 isActive(item.route)
                 ? 'bg-white/10 dark:bg-gray-800 border-verde-cope text-white dark:text-verde-cope shadow-lg'
@@ -53,7 +53,7 @@
                 layoutStore.isCollapsed ? 'justify-center pl-0 border-l-0' : ''
             ]"
             >
-                <span class="shrink-0 transition-colors duration-200"
+                <span class="shrink-0 transition-colors duration-150"
                       :class="isActive(item.route) ? 'text-verde-cope' : 'group-hover:text-verde-cope'">
                     <svg v-html="item.iconSvg" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"></svg>
                 </span>
@@ -65,7 +65,7 @@
 
             <div
                 v-if="layoutStore.isCollapsed"
-                class="absolute left-full top-0 ml-2 px-3 py-2 bg-verde-cope text-white text-sm font-bold rounded-md shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 whitespace-nowrap pointer-events-none"
+                class="absolute left-full top-0 ml-2 px-3 py-2 bg-verde-cope text-white text-sm font-bold rounded-md shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 whitespace-nowrap pointer-events-none"
                 style="width: max-content;"
             >
                 {{ item.label }}
@@ -76,7 +76,7 @@
         <div v-else class="relative group">
             <button
                 @click="handleGroupClick(item.id)"
-                class="w-full flex items-center px-3 py-3 rounded-lg transition-all duration-200 group border-l-4 border-transparent"
+                class="w-full flex items-center px-3 py-3 rounded-lg transition-all duration-150 group border-l-4 border-transparent"
                 :class="[
                     openGroups.includes(item.id) && !layoutStore.isCollapsed
                     ? 'bg-black/20 dark:bg-black/40 text-white dark:text-gray-100'
@@ -93,7 +93,7 @@
 
                 <svg
                     v-if="!layoutStore.isCollapsed"
-                    class="w-4 h-4 transition-transform duration-300"
+                    class="w-4 h-4 transition-transform duration-150"
                     :class="openGroups.includes(item.id) ? 'text-verde-cope rotate-180' : 'text-gray-400'"
                     fill="none" viewBox="0 0 24 24" stroke="currentColor"
                 >
@@ -110,7 +110,7 @@
                        rounded-xl shadow-2xl
                        opacity-0 invisible
                        group-hover:opacity-100 group-hover:visible
-                       transition-all duration-300 ease-out
+                       transition-all duration-150 ease-out
                        origin-top-left
                        group-hover:scale-100 scale-95
                        group-hover:translate-x-1
@@ -145,10 +145,10 @@
 
             <!-- ACORDEÓN EXPANDIDO (SOLO CUANDO ESTÁ ABIERTO) -->
             <transition
-                enter-active-class="transition-all duration-300 ease-out"
+                enter-active-class="transition-all duration-150 ease-out"
                 enter-from-class="opacity-0 -translate-y-2"
                 enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition-all duration-200 ease-in"
+                leave-active-class="transition-all duration-100 ease-in"
                 leave-from-class="opacity-100 translate-y-0"
                 leave-to-class="opacity-0 -translate-y-2"
             >
@@ -163,14 +163,14 @@
                         :key="child.route"
                         :to="child.route"
                         @click="handleItemClick"
-                        class="relative group/child flex items-center gap-3 px-3 py-2 rounded-r-lg rounded-bl-lg ml-2 text-sm transition-all duration-200"
+                        class="relative group/child flex items-center gap-3 px-3 py-2 rounded-r-lg rounded-bl-lg ml-2 text-sm transition-all duration-75"
                         :class="isActive(child.route)
                             ? 'bg-verde-cope/10 text-verde-cope font-bold translate-x-1'
                             : 'text-gray-400 hover:text-white hover:bg-white/5 hover:translate-x-1'"
                     >
                          <!-- Indicador circular animado -->
                          <span
-                            class="w-1.5 h-1.5 rounded-full transition-all duration-300 ring-2"
+                            class="w-1.5 h-1.5 rounded-full transition-all duration-150 ring-2"
                             :class="isActive(child.route)
                                 ? 'bg-verde-cope ring-verde-cope/30 scale-110'
                                 : 'bg-gray-600 ring-transparent group-hover/child:bg-gray-300'"

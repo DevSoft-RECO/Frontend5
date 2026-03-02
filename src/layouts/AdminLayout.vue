@@ -1,10 +1,10 @@
 <template>
-  <div class="flex h-screen bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans overflow-hidden transition-colors duration-300">
+  <div class="flex h-screen bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans overflow-hidden transition-colors duration-150">
 
     <AdminSidebar />
 
     <div
-      class="flex flex-col flex-1 h-full transition-all duration-300 ease-[cubic-bezier(0.25,0.8,0.25,1)]"
+      class="flex flex-col flex-1 h-full transition-all duration-150 ease-[cubic-bezier(0.25,0.8,0.25,1)]"
       :class="[layoutStore.isCollapsed ? 'md:ml-20' : 'md:ml-64']"
     >
 
@@ -12,7 +12,9 @@
 
       <main class="flex-1 overflow-x-hidden overflow-y-auto p-6 relative custom-scrollbar">
         <RouterView v-slot="{ Component }">
-            <component :is="Component" />
+            <transition name="fade-fast" mode="out-in">
+                <component :is="Component" />
+            </transition>
         </RouterView>
       </main>
     </div>
@@ -42,6 +44,18 @@ onUnmounted(() => {
   window.removeEventListener('resize', layoutStore.handleResize)
 })
 </script>
+
+<style scoped>
+.fade-fast-enter-active,
+.fade-fast-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.fade-fast-enter-from,
+.fade-fast-leave-to {
+  opacity: 0;
+}
+</style>
 
 <style>
 /* SCROLLBAR OPTIMIZADO PARA TAILWIND 4

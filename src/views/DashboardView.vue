@@ -297,13 +297,6 @@ html.dark #results-container:fullscreen .text-gray-900 { color: #f9fafb !importa
 html.dark #results-container:fullscreen .text-gray-600 { color: #d1d5db !important; }
 html.dark #results-container:fullscreen .bg-white { background-color: #1e293b !important; }
 html.dark #results-container:fullscreen .bg-gray-100 { background-color: #334155 !important; }
-
-/* Animation and Transitions */
-.transition-all {
-    transition-property: all;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 1000ms;
-}
 </style>
 
 <style scoped>

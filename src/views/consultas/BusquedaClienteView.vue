@@ -28,7 +28,7 @@
             </div>
 
             <!-- Tab 1: DPI / Codigo -->
-            <div v-show="activeTab === 'dpi'" class="space-y-4 animate-in fade-in duration-300">
+            <div v-show="activeTab === 'dpi'" class="space-y-4">
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 text-center">Ingrese DPI o Código de Cliente</label>
                 <div class="flex flex-col sm:flex-row gap-2">
                     <input v-model="searchQuery" 
@@ -51,7 +51,7 @@
             </div>
 
             <!-- Tab 2: Nombre -->
-            <div v-show="activeTab === 'nombre'" class="space-y-4 animate-in fade-in duration-300">
+            <div v-show="activeTab === 'nombre'" class="space-y-4">
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1 text-center">Ingrese el Nombre Completo</label>
                 <div class="flex flex-col sm:flex-row gap-2">
                     <input v-model="searchNameQuery" 
@@ -79,7 +79,7 @@
     </div>
 
     <!-- Name Search Results List -->
-    <div v-if="nameResults.length > 0 && !result" class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700 animate-in slide-in-from-bottom-4 duration-500">
+    <div v-if="nameResults.length > 0 && !result" class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
         <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
             Resultados Coincidentes ({{ nameResults.length }})
         </h3>
@@ -117,7 +117,7 @@
         </div>
     </div>
 
-    <div v-if="result" class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom-4 duration-500">
+    <div v-if="result" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <!-- Result Card: Personal Info -->
         <div class="lg:col-span-2 bg-white dark:bg-gray-800 shadow-xl rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700">

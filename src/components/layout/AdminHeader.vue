@@ -3,7 +3,7 @@
     class="sticky top-0 z-30 flex h-16 w-full items-center justify-between px-6
            bg-white dark:bg-gray-800
            border-b-2 border-[var(--color-verde-cope)]
-           shadow-sm transition-colors duration-300"
+           shadow-sm transition-colors duration-150"
   >
     <div class="flex items-center gap-4">
 
@@ -21,7 +21,7 @@
         class="hidden md:flex p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
       >
         <svg
-            class="w-6 h-6 transition-transform duration-300"
+            class="w-6 h-6 transition-transform duration-150"
             :class="layoutStore.isCollapsed ? 'rotate-180' : ''"
             fill="none" stroke="currentColor" viewBox="0 0 24 24"
         >
