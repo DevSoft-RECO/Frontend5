@@ -68,6 +68,14 @@ const routes: RouteRecordRaw[] = [
                 }
             },
             {
+                path: 'urnas',
+                name: 'admin-urnas-gestion',
+                component: () => import('@/views/admin/UrnasGestionView.vue'),
+                meta: {
+                    title: 'Gestión de Urnas'
+                }
+            },
+            {
                 path: 'dashboard',
                 name: 'dashboard',
                 component: DashboardView,
