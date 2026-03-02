@@ -288,11 +288,39 @@ const handleVerify = async () => {
                     title: '¡Elegibilidad Aprobada!',
                     html: html,
                     icon: 'success',
-                    confirmButtonText: 'Continuar',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirmar Asistencia',
+                    cancelButtonText: 'Cerrar',
                     confirmButtonColor: '#5eb301',
+                    cancelButtonColor: '#6b7280',
+                    showLoaderOnConfirm: true,
                     customClass: {
                         popup: 'rounded-3xl shadow-2xl',
                         title: 'text-2xl font-bold text-gray-900'
+                    },
+                    preConfirm: async () => {
+                        try {
+                            const confirmResponse = await axios.post('http://localhost:8004/api/asistencia/confirmar', {
+                                codigo_cliente: result.value?.personal.codigo_cliente,
+                                dpi: result.value?.personal.dpi,
+                                nombre_completo: [result.value?.personal.nombre1, result.value?.personal.nombre2, result.value?.personal.nombre3, result.value?.personal.apellido1, result.value?.personal.apellido2].filter(Boolean).join(' '),
+                                ubicacion: `${result.value?.personal.muni_domicilio}, ${result.value?.personal.depto_domicilio}`
+                            })
+                            return confirmResponse.data
+                        } catch (error: any) {
+                            Swal.showValidationMessage(`Error: ${error.response?.data?.message || 'No se pudo registrar la asistencia'}`)
+                        }
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: '¡Asistencia Registrada!',
+                            text: 'La presencia del asociado ha sido grabada exitosamente.',
+                            icon: 'success',
+                            confirmButtonColor: '#5eb301',
+                            customClass: { popup: 'rounded-3xl shadow-2xl' }
+                        })
                     }
                 })
             } else {
