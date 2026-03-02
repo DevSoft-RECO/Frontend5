@@ -265,9 +265,16 @@ onMounted(() => {
           fetchStats(); // Recargar datos al recibir actualización
       });
   
+  echo.channel('asistencias-channel')
+      .listen('AsistenciaRegistrada', () => {
+          console.log('Actualización de asistencia recibida');
+          fetchStats(); // Recargar datos al recibir nueva asistencia
+      });
+  
   onUnmounted(() => {
     document.removeEventListener('fullscreenchange', handleFullscreenChange);
     echo.leaveChannel('votes-channel');
+    echo.leaveChannel('asistencias-channel');
   });
 })
 </script>
