@@ -272,13 +272,25 @@ const menuItems = computed(() => {
         },
         {
             id: 'formularios',
-            label: 'Formularios',
+            label: 'Verificar Asociados',
             iconSvg: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />',
             show: true,
             children: [
                 {
                     label: 'Buscar Usuario',
                     route: '/admin/consultas/busqueda-cliente'
+                }
+            ]
+        },
+        {
+            id: 'registro-asistencias',
+            label: 'Registro de Asistencias',
+            iconSvg: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />',
+            show: true,
+            children: [
+                {
+                    label: 'Consultar Asistencias',
+                    route: '/admin/consultas/asistencias'
                 }
             ]
         },

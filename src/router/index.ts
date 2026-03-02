@@ -60,6 +60,14 @@ const routes: RouteRecordRaw[] = [
                 }
             },
             {
+                path: 'consultas/asistencias',
+                name: 'admin-asistencia-reporte',
+                component: () => import('@/views/consultas/AsistenciaReporteView.vue'),
+                meta: {
+                    title: 'Registro de Asistencias'
+                }
+            },
+            {
                 path: 'dashboard',
                 name: 'dashboard',
                 component: DashboardView,
