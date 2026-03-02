@@ -87,8 +87,13 @@
                 </div>
 
                 <div class="space-y-1">
+                    <span class="text-xs text-gray-400 uppercase font-bold tracking-wider">Fecha Nacimiento</span>
+                    <p class="text-gray-900 dark:text-gray-100">{{ formatDate(result.personal.fecha_nacimiento) }}</p>
+                </div>
+
+                <div class="space-y-1">
                     <span class="text-xs text-gray-400 uppercase font-bold tracking-wider">Edad</span>
-                    <p class="text-gray-900 dark:text-gray-100">{{ result.personal.edad }} años</p>
+                    <p class="text-gray-900 dark:text-gray-100 font-bold">{{ Math.floor(result.personal.edad) }} años</p>
                 </div>
 
                 <div class="sm:col-span-2 space-y-1">
@@ -100,15 +105,28 @@
             </div>
             
             <!-- Quick Balances from Client CSV -->
-            <div class="bg-gray-50 dark:bg-gray-900/30 p-6 border-t border-gray-100 dark:border-gray-700 grid grid-cols-2 gap-4">
-                <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                    <span class="block text-[10px] text-gray-400 uppercase font-bold tracking-tighter mb-1">Saldo Aportaciones</span>
-                    <p class="text-verde-cope font-bold text-lg">{{ formatCurrency(result.personal.saldo_aportaciones) }}</p>
+            <div class="bg-gray-50 dark:bg-gray-900/30 p-6 border-t border-gray-100 dark:border-gray-700">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                        <span class="block text-[10px] text-gray-400 uppercase font-bold tracking-tighter mb-1">Saldo Aportaciones</span>
+                        <p class="text-verde-cope font-bold text-lg">{{ formatCurrency(result.personal.saldo_aportaciones) }}</p>
+                    </div>
+                    <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                        <span class="block text-[10px] text-gray-400 uppercase font-bold tracking-tighter mb-1">Saldo Ahorros</span>
+                        <p class="text-blue-600 font-bold text-lg">{{ formatCurrency(result.personal.saldo_ahorros) }}</p>
+                    </div>
                 </div>
-                <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
-                    <span class="block text-[10px] text-gray-400 uppercase font-bold tracking-tighter mb-1">Saldo Ahorros</span>
-                    <p class="text-blue-600 font-bold text-lg">{{ formatCurrency(result.personal.saldo_ahorros) }}</p>
-                </div>
+
+                <button @click="handleVerify"
+                        :disabled="verifying"
+                        class="w-full py-3 bg-gradient-to-r from-verde-cope to-[#4a9c02] hover:from-green-600 hover:to-green-700 text-white rounded-xl font-bold shadow-lg shadow-green-500/20 transition-all flex items-center justify-center gap-2 group">
+                    <svg v-if="verifying" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <svg v-else class="w-5 h-5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>{{ verifying ? 'Verificando...' : 'Verificar Elegibilidad' }}</span>
+                </button>
             </div>
         </div>
 
@@ -174,6 +192,7 @@ interface ClientPersonal {
     depto_domicilio: string
     muni_domicilio: string
     edad: number
+    fecha_nacimiento: string
     saldo_aportaciones: number
     saldo_ahorros: number
 }
@@ -195,6 +214,9 @@ const searchQuery = ref('')
 const result = ref<SearchResult | null>(null)
 const loading = ref(false)
 const error = ref('')
+const verifying = ref(false)
+
+import Swal from 'sweetalert2'
 
 const handleSearch = async () => {
     if (!searchQuery.value) return
@@ -221,6 +243,91 @@ const handleSearch = async () => {
         }
     } finally {
         loading.value = false
+    }
+}
+
+const handleVerify = async () => {
+    if (!result.value) return
+    
+    verifying.value = true
+    try {
+        const response = await axios.post('http://localhost:8004/api/asistencia/verificar', {
+            codigo_cliente: result.value.personal.codigo_cliente
+        })
+
+        if (response.data.success) {
+            const { approved, checks } = response.data.data
+            
+            let html = `
+                <div class="text-left space-y-4 py-2">
+                    <div class="flex items-center justify-between p-3 rounded-xl ${checks.edad.passed ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">${checks.edad.passed ? '✅' : '❌'}</span>
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-tighter">Mayor de Edad</p>
+                                <p class="text-sm font-medium ${checks.edad.passed ? 'text-green-700' : 'text-red-700'}">${checks.edad.message}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold">${checks.edad.val.toFixed(2)} años</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 rounded-xl ${checks.aportaciones.passed ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">${checks.aportaciones.passed ? '✅' : '❌'}</span>
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-tighter">Saldos Mínimos</p>
+                                <p class="text-sm font-medium ${checks.aportaciones.passed ? 'text-green-700' : 'text-red-700'}">${checks.aportaciones.message}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-bold">Q${checks.aportaciones.val}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 rounded-xl ${checks.mora.passed ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl">${checks.mora.passed ? '✅' : '❌'}</span>
+                            <div>
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-tighter">Historial de Crétidos</p>
+                                <p class="text-sm font-medium ${checks.mora.passed ? 'text-green-700' : 'text-red-700'}">${checks.mora.message}</p>
+                            </div>
+                        </div>
+                        ${checks.mora.has_credit ? `<span class="text-xs font-bold">Mora: ${checks.mora.val}</span>` : ''}
+                    </div>
+                </div>
+            `
+
+            if (approved) {
+                Swal.fire({
+                    title: '¡Elegibilidad Aprobada!',
+                    html: html,
+                    icon: 'success',
+                    confirmButtonText: 'Continuar',
+                    confirmButtonColor: '#5eb301',
+                    customClass: {
+                        popup: 'rounded-3xl shadow-2xl',
+                        title: 'text-2xl font-bold text-gray-900'
+                    }
+                })
+            } else {
+                Swal.fire({
+                    title: 'No Cumple Requisitos',
+                    html: `
+                        <p class="mb-4 text-gray-500 text-sm">El asociado no cumple con los requisitos mínimos para participar en esta gestión.</p>
+                        ${html}
+                    `,
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#d33',
+                    customClass: {
+                        popup: 'rounded-3xl shadow-2xl',
+                        title: 'text-2xl font-bold text-gray-900'
+                    }
+                })
+            }
+        }
+    } catch (err) {
+        Swal.fire('Error', 'No se pudo verificar la elegibilidad en este momento.', 'error')
+    } finally {
+        verifying.value = false
     }
 }
 
