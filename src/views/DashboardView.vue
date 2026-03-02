@@ -7,7 +7,7 @@
           Panel de Control
         </h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Resumen de métricas de asistencia - Gestión {{ stats.year }}
+          Resumen de métricas y resultados - Gestión {{ stats.year }}
         </p>
       </div>
       <div class="flex items-center gap-2 text-xs font-medium text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700">
@@ -19,7 +19,7 @@
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- Total Card -->
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 relative overflow-hidden group">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 relative overflow-hidden group transition-all hover:shadow-2xl">
         <div class="absolute -right-6 -top-6 w-24 h-24 bg-azul-cope/5 rounded-full transition-transform group-hover:scale-150 duration-700"></div>
         <div class="relative z-10">
           <div class="flex items-center gap-4 mb-4">
@@ -37,7 +37,7 @@
       </div>
 
       <!-- Sistema Card -->
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 relative overflow-hidden group">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 relative overflow-hidden group transition-all hover:shadow-2xl">
         <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/5 rounded-full transition-transform group-hover:scale-150 duration-700"></div>
         <div class="relative z-10">
           <div class="flex items-center gap-4 mb-4">
@@ -55,7 +55,7 @@
       </div>
 
       <!-- Manual Card -->
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 relative overflow-hidden group">
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 relative overflow-hidden group transition-all hover:shadow-2xl">
         <div class="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/5 rounded-full transition-transform group-hover:scale-150 duration-700"></div>
         <div class="relative z-10">
           <div class="flex items-center gap-4 mb-4">
@@ -73,39 +73,113 @@
       </div>
     </div>
 
-    <!-- Quick Access Section -->
-    <div class="bg-gradient-to-br from-azul-cope to-blue-900 p-8 rounded-3xl shadow-2xl relative overflow-hidden">
-      <div class="absolute top-0 right-0 p-4 opacity-10">
-        <svg class="w-48 h-48 rotate-12" fill="white" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        <!-- Quick Access Section -->
+    <div class="bg-gradient-to-br from-azul-cope to-blue-900 p-10 rounded-[40px] shadow-2xl relative overflow-hidden group">
+      <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-45 transition-transform duration-700">
+        <svg class="w-56 h-56" fill="white" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
       </div>
       <div class="relative z-10 max-w-2xl">
-        <h2 class="text-white text-2xl font-bold mb-2">Acciones Rápidas</h2>
-        <p class="text-blue-100 mb-6 font-medium">Inicie una nueva verificación de asociado o consulte el reporte detallado de asistencias grabadas en tiempo real.</p>
+        <h2 class="text-white text-3xl font-black mb-4 uppercase tracking-tighter italic">Navegación Rápida</h2>
+        <p class="text-blue-100 mb-8 font-medium text-lg opacity-80">Gestione el flujo de asociados y el escrutinio de votos desde una sola consola centralizada.</p>
         <div class="flex flex-wrap gap-4">
-          <RouterLink to="/admin/consultas/busqueda-cliente" class="px-6 py-3 bg-verde-cope hover:bg-green-500 text-white rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1">
-            Iniciar Verificación
+          <RouterLink to="/admin/consultas/busqueda-cliente" class="px-8 py-4 bg-verde-cope hover:bg-green-500 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl transition-all transform hover:-translate-y-1 active:scale-95">
+            Verificar Asociado
           </RouterLink>
-          <RouterLink to="/admin/consultas/asistencias" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl font-bold backdrop-blur-md transition-all">
-            Ver Reporte Completo
+          <RouterLink to="/admin/votos/registrar" class="px-8 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl font-black uppercase tracking-widest text-sm backdrop-blur-xl transition-all active:scale-95">
+            Registrar Votos
+          </RouterLink>
+          <RouterLink to="/admin/urnas" class="px-8 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-2xl font-black uppercase tracking-widest text-sm backdrop-blur-xl transition-all active:scale-95">
+            Gestionar Urnas
           </RouterLink>
         </div>
       </div>
     </div>
+
+    <!-- Resultados Electorales Section -->
+    <div v-if="stats.candidatos && stats.candidatos.length > 0" 
+         class="bg-white dark:bg-gray-800 p-8 rounded-[32px] shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden relative">
+      <!-- Decorative Background -->
+      <div class="absolute top-0 right-0 p-8 opacity-5">
+        <svg class="w-64 h-64" fill="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+      </div>
+
+      <div class="relative z-10">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Resultados de Votos {{ stats.year }}</h2>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">Monitoreo de votos en tiempo real por candidato</p>
+            </div>
+            <div class="px-4 py-2 bg-verde-cope/10 text-verde-cope rounded-2xl font-black text-xs uppercase shadow-sm border border-verde-cope/20">
+                En Vivo
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div v-for="(candidato, index) in stats.candidatos" :key="candidato.id" 
+                 class="group relative flex flex-col md:flex-row md:items-center gap-4 p-4 rounded-2xl transition-all hover:bg-gray-50 dark:hover:bg-gray-900/40">
+                
+                <!-- Candidate Info -->
+                <div class="flex items-center gap-4 w-full md:w-64 shrink-0">
+                    <div class="relative shrink-0">
+                        <img :src="candidato.foto_url || '/placeholder-user.png'" 
+                             class="w-14 h-14 rounded-2xl object-cover border-2 border-white dark:border-gray-800 shadow-lg group-hover:scale-110 transition-transform duration-500" 
+                             alt="Avatar">
+                        <div class="absolute -top-2 -left-2 w-6 h-6 bg-azul-cope text-white text-[10px] font-black flex items-center justify-center rounded-lg shadow-md border-2 border-white dark:border-gray-800">
+                            {{ index + 1 }}
+                        </div>
+                    </div>
+                    <div class="min-w-0">
+                        <h4 class="font-black text-gray-900 dark:text-white truncate leading-none mb-1">{{ candidato.nombre_completo }}</h4>
+                        <span class="text-[10px] font-black text-azul-cope uppercase tracking-tight">{{ candidato.urna_nombre }}</span>
+                    </div>
+                </div>
+
+                <!-- Bar Container -->
+                <div class="flex-1 flex items-center gap-4">
+                    <div class="relative flex-1 h-3 bg-gray-100 dark:bg-gray-700/50 rounded-full overflow-hidden border border-gray-200/20">
+                        <div class="absolute inset-y-0 left-0 bg-gradient-to-r transition-all duration-1000 ease-out shadow-lg"
+                             :class="[
+                                index === 0 ? 'from-verde-cope to-green-500' : 
+                                index === 1 ? 'from-azul-cope to-blue-500' : 'from-gray-400 to-gray-500'
+                             ]"
+                             :style="{ width: `${(candidato.total_votos / maxVotes) * 100}%` }">
+                             <!-- Subtle Glow -->
+                             <div class="absolute top-0 right-0 bottom-0 w-8 bg-white/20 blur-sm animate-pulse"></div>
+                        </div>
+                    </div>
+                    <div class="shrink-0 text-right min-w-[100px]">
+                        <span class="text-xl font-black text-gray-900 dark:text-white tabular-nums">{{ candidato.total_votos }}</span>
+                        <span class="text-[10px] font-black text-gray-400 uppercase ml-1.5">Votos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 
-const stats = ref({
+const stats = ref<any>({
   total: 0,
   sistema: 0,
   manual: 0,
-  year: new Date().getFullYear()
+  year: new Date().getFullYear(),
+  candidatos: []
 })
 
 const lastUpdate = ref('')
+
+const maxVotes = computed(() => {
+    if (!stats.value.candidatos || stats.value.candidatos.length === 0) return 1
+    const max = Math.max(...stats.value.candidatos.map((c: any) => c.total_votos))
+    return max === 0 ? 1 : max
+})
 
 const fetchStats = async () => {
   try {
@@ -123,3 +197,12 @@ onMounted(() => {
   fetchStats()
 })
 </script>
+
+<style scoped>
+/* Optional: Custom font or animations for the bars */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 1000ms;
+}
+</style>
