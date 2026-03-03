@@ -1,8 +1,7 @@
-import axios from 'axios';
+import motherApi from '@/api/axios-mother';
 
 // Variables de entorno
-const MOTHER_API_URL = import.meta.env.VITE_MOTHER_API_URL || 'http://localhost:8000';
-const MOTHER_APP_URL = import.meta.env.VITE_MOTHER_APP_URL || 'http://localhost:5173';
+const MOTHER_APP_URL = import.meta.env.VITE_MOTHER_APP_URL;
 
 export interface UserData {
     [key: string]: any;
@@ -42,16 +41,7 @@ export default {
      * 3. OBTENER USUARIO (API Madre)
      */
     async getUser(): Promise<any> {
-        const token = localStorage.getItem('access_token');
-        if (!token) throw new Error("No hay token disponible");
-
-        const response = await axios.get(`${MOTHER_API_URL}/api/user`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json'
-            }
-        });
-
+        const response = await motherApi.get('/api/user');
         return response.data;
     },
 

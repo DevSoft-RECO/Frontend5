@@ -109,7 +109,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import api from '@/api/axios'
 import Swal from 'sweetalert2'
 
 const urnas = ref<any[]>([])
@@ -117,7 +117,7 @@ const candidatos = ref<any[]>([])
 
 const fetchUrnas = async () => {
     try {
-        const response = await axios.get('http://localhost:8004/api/urnas')
+        const response = await api.get('/urnas')
         if (response.data.success) urnas.value = response.data.data
     } catch (error) {
         console.error('Error fetching urnas:', error)
@@ -126,7 +126,7 @@ const fetchUrnas = async () => {
 
 const fetchCandidatos = async () => {
     try {
-        const response = await axios.get('http://localhost:8004/api/candidatos')
+        const response = await api.get('/candidatos')
         if (response.data.success) candidatos.value = response.data.data
     } catch (error) {
         console.error('Error fetching candidatos:', error)
@@ -168,9 +168,9 @@ const openUrnaModal = async (urna: any = null) => {
     if (formValues) {
         try {
             if (urna) {
-                await axios.put(`http://localhost:8004/api/urnas/${urna.id}`, formValues)
+                await api.put(`/urnas/${urna.id}`, formValues)
             } else {
-                await axios.post('http://localhost:8004/api/urnas', formValues)
+                await api.post('/urnas', formValues)
             }
             Swal.fire('¡Éxito!', 'La urna se guardó correctamente', 'success')
             fetchUrnas()
@@ -194,7 +194,7 @@ const deleteUrna = async (id: number) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`http://localhost:8004/api/urnas/${id}`)
+            await api.delete(`/urnas/${id}`)
             Swal.fire('Eliminado', 'La urna ha sido eliminada.', 'success')
             fetchUrnas()
         } catch (error) {
@@ -253,11 +253,11 @@ const openCandidatoModal = async (candidato: any = null) => {
         try {
             if (candidato) {
                 formData.append('_method', 'PUT')
-                await axios.post(`http://localhost:8004/api/candidatos/${candidato.id}`, formData, {
+                await api.post(`/candidatos/${candidato.id}`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 })
             } else {
-                await axios.post('http://localhost:8004/api/candidatos', formData, {
+                await api.post('/candidatos', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 })
             }
@@ -283,7 +283,7 @@ const deleteCandidato = async (id: number) => {
 
     if (result.isConfirmed) {
         try {
-            await axios.delete(`http://localhost:8004/api/candidatos/${id}`)
+            await api.delete(`/candidatos/${id}`)
             Swal.fire('Eliminado', 'Candidato eliminado.', 'success')
             fetchCandidatos()
         } catch (error) {

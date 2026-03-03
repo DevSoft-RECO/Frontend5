@@ -149,7 +149,7 @@ const userInitials = computed(() => {
 const handleReturnToMother = () => {
     isDropdownOpen.value = false
     // Redirigir a la App Madre (Dashboard principal)
-    window.location.href = import.meta.env.VITE_MOTHER_APP_URL || 'http://localhost:5173'
+    window.location.href = import.meta.env.VITE_MOTHER_APP_URL || ''
 }
 
 // Asegurar que tenemos datos al cargar

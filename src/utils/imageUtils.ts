@@ -7,7 +7,7 @@ export const getAvatarUrl = (path: string | null | undefined): string | null => 
     }
 
     // Obtener URL base de la App Madre desde variables de entorno
-    const baseUrl = (import.meta.env.VITE_MOTHER_API_URL || 'http://localhost:8000').replace(/\/+$/, '');
+    const baseUrl = (import.meta.env.VITE_MOTHER_API_URL || '').replace(/\/+$/, '');
 
     // Limpiar el path para evitar dobles slashes
     const cleanPath = path.replace(/^\/+/, '');

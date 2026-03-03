@@ -110,7 +110,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import api from '@/api/axios'
 import Swal from 'sweetalert2'
 
 const urnas = ref<any[]>([])
@@ -130,7 +130,7 @@ const resultados = ref<{
 
 const fetchUrnas = async () => {
     try {
-        const response = await axios.get('http://localhost:8004/api/urnas')
+        const response = await api.get('/urnas')
         if (response.data.success) urnas.value = response.data.data
     } catch (error) {
         console.error('Error fetching urnas:', error)
@@ -146,7 +146,7 @@ const onUrnaChange = () => {
 const fetchResultadosUrna = async () => {
     loading.value = true
     try {
-        const response = await axios.get(`http://localhost:8004/api/votos/urna/${selectedUrna.value}`)
+        const response = await api.get(`/votos/urna/${selectedUrna.value}`)
         if (response.data.success) {
             resultados.value = {
                 votos_nulos: response.data.data.urna.votos_nulos,
@@ -174,7 +174,7 @@ const saveBatchResults = async () => {
             }))
         }
 
-        const response = await axios.post(`http://localhost:8004/api/votos/urna/${selectedUrna.value}/guardar`, payload)
+        const response = await api.post(`/votos/urna/${selectedUrna.value}/guardar`, payload)
 
         if (response.data.success) {
             Swal.fire({

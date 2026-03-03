@@ -236,7 +236,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import axios from 'axios'
+import api from '@/api/axios'
 
 interface AsistenciaRegistro {
     id: number
@@ -281,7 +281,7 @@ const pagination = ref<PaginationData>({
 const fetchData = async (page = 1) => {
     loading.value = true
     try {
-        const response = await axios.get('http://localhost:8004/api/asistencia/reporte', {
+        const response = await api.get('/asistencia/reporte', {
             params: {
                 page,
                 query: searchQuery.value,
@@ -312,7 +312,7 @@ const fetchData = async (page = 1) => {
 const handleDownload = async () => {
     exporting.value = true
     try {
-        const response = await axios.get('http://localhost:8004/api/asistencia/export', {
+        const response = await api.get('/asistencia/export', {
             params: { year: selectedYear.value },
             responseType: 'blob'
         })

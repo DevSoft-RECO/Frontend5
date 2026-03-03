@@ -221,7 +221,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, onUnmounted } from 'vue'
-import axios from 'axios'
+import api from '@/api/axios'
 import { echo } from '@/plugins/echo'
 
 const stats = ref<any>({
@@ -254,7 +254,7 @@ const maxVotes = computed(() => {
 const fetchStats = async () => {
   isLoading.value = true
   try {
-    const response = await axios.get('http://localhost:8004/api/dashboard/stats')
+    const response = await api.get('/dashboard/stats')
     if (response.data.success) {
       stats.value = response.data.data
       lastUpdate.value = new Date().toLocaleTimeString('es-GT', { hour: '2-digit', minute: '2-digit' })

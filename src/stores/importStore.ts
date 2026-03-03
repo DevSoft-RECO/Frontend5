@@ -1,10 +1,6 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import api from '@/api/axios'
 import Swal from 'sweetalert2'
-
-// Define URL base. Ideally this comes from env or a common config
-// Assuming standard Laravel API path
-const API_BASE = 'http://localhost:8004/api/import'
 
 interface ImportState {
   activeJobId: string | null
@@ -56,7 +52,7 @@ export const useImportStore = defineStore('import', {
       if (dates.full) formData.append('full', '1')
 
       try {
-        const response = await axios.post(`${API_BASE}/upload`, formData, {
+        const response = await api.post('/import/upload', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           },
@@ -95,7 +91,7 @@ export const useImportStore = defineStore('import', {
         if (!this.activeJobId) return
 
         try {
-          const response = await axios.get(`${API_BASE}/status/${this.activeJobId}`)
+          const response = await api.get(`/import/status/${this.activeJobId}`)
           const data = response.data
 
           if (data.status === 'not_found') {

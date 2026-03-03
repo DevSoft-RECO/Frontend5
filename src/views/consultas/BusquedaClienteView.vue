@@ -247,7 +247,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import axios from 'axios'
+import api from '@/api/axios'
 import Swal from 'sweetalert2'
 
 interface ClientPersonal {
@@ -298,7 +298,7 @@ const handleSearch = async () => {
     nameResults.value = []
 
     try {
-        const response = await axios.post('http://localhost:8004/api/clientes/search', {
+        const response = await api.post('/clientes/search', {
             query: searchQuery.value
         })
         
@@ -340,7 +340,7 @@ const handleSearchName = async () => {
     nameResults.value = []
 
     try {
-        const response = await axios.post('http://localhost:8004/api/clientes/search-name', {
+        const response = await api.post('/clientes/search-name', {
             query: searchNameQuery.value
         })
         
@@ -472,7 +472,7 @@ const handleManualRegistration = async (isForcedByMora = false) => {
     if (formValues) {
         verifying.value = true
         try {
-            const response = await axios.post('http://localhost:8004/api/asistencia/confirmar', {
+            const response = await api.post('/asistencia/confirmar', {
                 ...formValues,
                 tipo_asistencia: isForcedByMora ? 'sistema' : 'manual'
             })
@@ -504,7 +504,7 @@ const handleVerify = async () => {
     
     verifying.value = true
     try {
-        const response = await axios.post('http://localhost:8004/api/asistencia/verificar', {
+        const response = await api.post('/asistencia/verificar', {
             codigo_cliente: result.value.personal.codigo_cliente
         })
 
@@ -565,7 +565,7 @@ const handleVerify = async () => {
                     },
                     preConfirm: async () => {
                         try {
-                            const confirmResponse = await axios.post('http://localhost:8004/api/asistencia/confirmar', {
+                            const confirmResponse = await api.post('/asistencia/confirmar', {
                                 codigo_cliente: result.value?.personal.codigo_cliente,
                                 dpi: result.value?.personal.dpi,
                                 nombre_completo: [result.value?.personal.nombre1, result.value?.personal.nombre2, result.value?.personal.nombre3, result.value?.personal.apellido1, result.value?.personal.apellido2].filter(Boolean).join(' '),
