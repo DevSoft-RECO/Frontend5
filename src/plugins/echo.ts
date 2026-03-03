@@ -7,8 +7,8 @@ declare global {
         Echo: any;
     }
 }
-
-window.Pusher = Pusher;
+// FUNCION EN LOCAL
+/* window.Pusher = Pusher;
 
 export const echo = new Echo({
     broadcaster: 'reverb',
@@ -18,4 +18,17 @@ export const echo = new Echo({
     wssPort: import.meta.env.VITE_REVERB_PORT ?? 6001,
     forceTLS: false, // Forzado a false para dev local, ya que no usamos https
     enabledTransports: ['ws'], // Limitamos a ws para evitar intentos fallidos por wss en local
+}); */
+
+// FUNCION EN PRODUCCION
+window.Pusher = Pusher;
+
+export const echo = new Echo({
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT ?? 443,
+    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
+    forceTLS: import.meta.env.VITE_REVERB_SCHEME === 'https',
+    enabledTransports: ['ws', 'wss'],
 });
