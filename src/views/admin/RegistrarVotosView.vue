@@ -117,6 +117,7 @@ const urnas = ref<any[]>([])
 const selectedUrna = ref('')
 const loading = ref(false)
 const saving = ref(false)
+const hasExistingData = ref(false)
 
 const resultados = ref<{
     votos_nulos: number,
@@ -153,6 +154,12 @@ const fetchResultadosUrna = async () => {
                 votos_blancos: response.data.data.urna.votos_blancos,
                 candidatos: response.data.data.candidatos
             }
+            
+            // Determinar si ya existen datos (al menos un voto registrado o nulos/blancos > 0)
+            const tieneVotosCandidatos = resultados.value.candidatos.some(c => (c.votos || 0) > 0)
+            hasExistingData.value = resultados.value.votos_nulos > 0 || 
+                                    resultados.value.votos_blancos > 0 || 
+                                    tieneVotosCandidatos
         }
     } catch (error) {
         console.error('Error fetching resultados:', error)
@@ -174,9 +181,38 @@ const saveBatchResults = async () => {
             }))
         }
 
+        // Si ya hay datos, pedir contraseña para confirmar actualización
+        if (hasExistingData.value) {
+            const { value: password } = await Swal.fire({
+                title: 'Confirmar Actualización',
+                text: 'Esta urna ya tiene datos registrados. Ingrese la contraseña para autorizar el cambio y evitar fraude.',
+                input: 'password',
+                inputLabel: 'Contraseña de Seguridad',
+                inputPlaceholder: 'Ingrese contraseña',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981', // verde-cope
+                confirmButtonText: 'Autorizar y Guardar',
+                cancelButtonText: 'Cancelar',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return '¡La contraseña es obligatoria!'
+                    }
+                    if (value !== 'admin123') {
+                        return 'Contraseña incorrecta'
+                    }
+                }
+            })
+
+            if (!password) {
+                saving.value = false
+                return
+            }
+        }
+
         const response = await api.post(`/votos/urna/${selectedUrna.value}/guardar`, payload)
 
         if (response.data.success) {
+            hasExistingData.value = true
             Swal.fire({
                 title: '¡Éxito!',
                 text: 'Resultados de la urna guardados correctamente',
