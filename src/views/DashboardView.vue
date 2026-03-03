@@ -251,8 +251,8 @@ const maxVotes = computed(() => {
     return max === 0 ? 1 : max
 })
 
-const fetchStats = async () => {
-  isLoading.value = true
+const fetchStats = async (silent = false) => {
+  if (!silent) isLoading.value = true
   try {
     const response = await api.get('/dashboard/stats')
     if (response.data.success) {
@@ -262,7 +262,7 @@ const fetchStats = async () => {
   } catch (error) {
     console.error('Error fetching dashboard stats:', error)
   } finally {
-    isLoading.value = false
+    if (!silent) isLoading.value = false
   }
 }
 
@@ -292,13 +292,13 @@ onMounted(() => {
   echo.channel('votes-channel')
       .listen('VotesUpdated', (e: any) => {
           console.log('Actualización de votos recibida:', e.stats);
-          fetchStats(); // Recargar datos al recibir actualización
+          fetchStats(true); // Recargar datos de forma silenciosa al recibir actualización
       });
   
   echo.channel('asistencias-channel')
       .listen('AsistenciaRegistrada', () => {
           console.log('Actualización de asistencia recibida');
-          fetchStats(); // Recargar datos al recibir nueva asistencia
+          fetchStats(true); // Recargar datos de forma silenciosa al recibir nueva asistencia
       });
   
   onUnmounted(() => {
