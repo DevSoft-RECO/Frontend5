@@ -204,11 +204,11 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useLayoutStore } from '@/stores/layout'
-// import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const layoutStore = useLayoutStore()
-// const authStore = useAuthStore()
+const authStore = useAuthStore()
 const openGroups = ref<string[]>([])
 
 // --- NUEVA FUNCIÓN PARA CERRAR EN MÓVIL ---
@@ -298,7 +298,7 @@ const menuItems = computed(() => {
             id: 'carga-datos',
             label: 'Carga de Datos',
             iconSvg: '<path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />',
-            show: true,
+            show: authStore.hasRole('Super Admin'),
             children: [
                 {
                     label: 'Clientes',

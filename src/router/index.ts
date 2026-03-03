@@ -40,7 +40,8 @@ const routes: RouteRecordRaw[] = [
                 name: 'admin-carga-clientes',
                 component: () => import('@/views/carga-datos/ClientesImportView.vue'),
                 meta: {
-                    title: 'Carga de Clientes'
+                    title: 'Carga de Clientes',
+                    role: 'Super Admin'
                 }
             },
             {
@@ -48,7 +49,8 @@ const routes: RouteRecordRaw[] = [
                 name: 'admin-carga-colocacion',
                 component: () => import('@/views/carga-datos/ColocacionImportView.vue'),
                 meta: {
-                    title: 'Carga de Colocación'
+                    title: 'Carga de Colocación',
+                    role: 'Super Admin'
                 }
             },
             {
