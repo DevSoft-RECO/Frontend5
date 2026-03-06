@@ -35,6 +35,8 @@
                            type="text" 
                            placeholder="Ej. 1234567890101 o 1675931" 
                            class="flex-1 rounded-xl border-gray-200 shadow-sm focus:border-verde-cope focus:ring focus:ring-verde-cope focus:ring-opacity-20 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all text-center"
+                           @input="searchQuery = searchQuery.replace(/\D/g, '')"
+                           inputmode="numeric"
                            @keyup.enter="handleSearch"
                     >
                     <button @click="handleSearch" 
