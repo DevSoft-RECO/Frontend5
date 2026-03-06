@@ -70,11 +70,12 @@
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Ubicación</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">Tipo</th>
                         <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Observación</th>
+                        <th v-if="authStore.hasRole('Super Admin')" class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                     <tr v-if="loading" v-for="i in 5" :key="i" class="animate-pulse">
-                        <td colspan="8" class="px-6 py-4"><div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div></td>
+                        <td :colspan="authStore.hasRole('Super Admin') ? 10 : 9" class="px-6 py-4"><div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div></td>
                     </tr>
                     <tr v-else v-for="item in asistencias" :key="item.id" class="hover:bg-gray-50/50 dark:hover:bg-gray-900/30 transition-colors">
                         <td class="px-6 py-4">
@@ -120,9 +121,16 @@
                         <td class="px-6 py-4 text-xs text-gray-500 dark:text-gray-400 truncate max-w-[200px]" :title="item.observacion || ''">
                             {{ item.observacion || '-' }}
                         </td>
+                        <td v-if="authStore.hasRole('Super Admin')" class="px-6 py-4 text-right">
+                            <button @click="deleteAsistencia(item.id)" 
+                                    class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                    title="Eliminar registro">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </td>
                     </tr>
                     <tr v-if="!loading && asistencias.length === 0">
-                        <td colspan="9" class="px-6 py-12 text-center">
+                        <td :colspan="authStore.hasRole('Super Admin') ? 10 : 9" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center justify-center text-gray-400">
                                 <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
                                 <p class="text-lg font-bold">No se encontraron registros</p>
@@ -237,6 +245,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import api from '@/api/axios'
+import { useAuthStore } from '@/stores/auth'
+import Swal from 'sweetalert2'
 
 interface AsistenciaRegistro {
     id: number
@@ -270,13 +280,15 @@ const availableYears = ref([2024, 2025, 2026, 2027, 2028])
 
 const pagination = ref<PaginationData>({
     total: 0,
-    per_page: 15,
+    per_page: 10,
     current_page: 1,
     last_page: 1,
     from: 0,
     to: 0,
     links: []
 })
+
+const authStore = useAuthStore()
 
 const fetchData = async (page = 1) => {
     loading.value = true
@@ -329,6 +341,40 @@ const handleDownload = async () => {
     } finally {
         exporting.value = false
     }
+}
+
+const deleteAsistencia = async (id: number) => {
+  const result = await Swal.fire({
+    title: '¿Está seguro?',
+    text: "Esta acción no se puede deshacer y el registro de asistencia será eliminado permanentemente.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  })
+
+  if (result.isConfirmed) {
+    try {
+      const response = await api.delete(`/asistencia/${id}`)
+      if (response.data.success) {
+        Swal.fire(
+          'Eliminado',
+          response.data.message,
+          'success'
+        )
+        fetchData(pagination.value.current_page)
+      }
+    } catch (error: any) {
+      console.error('Error deleting asistencia:', error)
+      Swal.fire(
+        'Error',
+        error.response?.data?.message || 'Error al eliminar el registro',
+        'error'
+      )
+    }
+  }
 }
 
 const visiblePages = computed(() => {
