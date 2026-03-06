@@ -17,7 +17,7 @@
     </div>
 
     <!-- Stats Grid (Attendance) -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
       <!-- Total Card -->
       <div class="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 relative overflow-hidden group transition-all hover:shadow-2xl">
         <div class="absolute -right-6 -top-6 w-24 h-24 bg-azul-cope/5 rounded-full transition-transform group-hover:scale-150 duration-700"></div>
@@ -30,9 +30,9 @@
           </div>
           <div class="flex items-baseline gap-2">
             <span class="text-4xl font-black text-gray-900 dark:text-white transition-all transform group-hover:translate-x-1">{{ stats.total }}</span>
-            <span class="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-0.5 rounded-lg">Asociados</span>
+            <span class="text-xs font-bold text-gray-400">/ {{ stats.asociados_activos }}</span>
           </div>
-          <p class="text-xs text-gray-400 mt-2">Registros consolidados de asistencia hoy</p>
+          <p class="text-xs text-gray-400 mt-2">Asistencia hoy vs Total aptos ({{ stats.asociados_activos }})</p>
         </div>
       </div>
 
@@ -69,6 +69,77 @@
             <span class="text-xs font-bold text-orange-400">{{ Math.round((stats.manual/stats.total || 0) * 100) }}%</span>
           </div>
           <p class="text-xs text-gray-400 mt-2">Registros de nuevos asociados hoy</p>
+        </div>
+      </div>
+
+      <!-- Quorum Card -->
+      <div 
+        class="p-6 rounded-3xl shadow-xl border relative overflow-hidden group transition-all duration-500 hover:shadow-2xl"
+        :class="[
+          isQuorumMet 
+            ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+            : 'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700'
+        ]"
+      >
+        <div 
+          class="absolute -right-6 -top-6 w-24 h-24 rounded-full transition-transform group-hover:scale-150 duration-700"
+          :class="isQuorumMet ? 'bg-green-500/10' : 'bg-purple-400/5'"
+        ></div>
+        
+        <div class="relative z-10">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-4">
+              <div 
+                class="w-12 h-12 rounded-2xl flex items-center justify-center transition-colors"
+                :class="isQuorumMet ? 'bg-green-500/20 text-green-600' : 'bg-purple-500/10 text-purple-600'"
+              >
+                <svg v-if="isQuorumMet" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+              </div>
+              <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Quórum Asamblea</h3>
+            </div>
+            
+            <!-- Status Badge -->
+            <div 
+              class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter shadow-sm border"
+              :class="isQuorumMet 
+                ? 'bg-green-500 text-white border-green-400 animate-pulse' 
+                : 'bg-amber-500 text-white border-amber-400'"
+            >
+              {{ isQuorumMet ? 'ALCANZADO' : 'PENDIENTE' }}
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-4">
+            <!-- Activos Row -->
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-3">
+              <span class="text-xs font-black text-gray-400 uppercase tracking-widest">Activos</span>
+              <span class="text-3xl font-black text-gray-900 dark:text-white">{{ stats.asociados_activos }}</span>
+            </div>
+            
+            <!-- Quorum Row -->
+            <div class="flex flex-col">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black text-purple-500 uppercase tracking-widest">QUORUM +1</span>
+                <span class="text-5xl font-black transition-all transform group-hover:scale-110" :class="isQuorumMet ? 'text-green-600 dark:text-green-400' : 'text-purple-600'">
+                  {{ stats.asociados_quorum }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-2 mt-1">
+               <div class="h-2 flex-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    class="h-full transition-all duration-1000 ease-out"
+                    :class="isQuorumMet ? 'bg-green-500' : 'bg-purple-500'"
+                    :style="{ width: `${Math.min((stats.total / (stats.asociados_quorum || 1)) * 100, 100)}%` }"
+                  ></div>
+               </div>
+               <span class="text-[11px] font-black tabular-nums" :class="isQuorumMet ? 'text-green-600' : 'text-gray-400'">
+                  {{ stats.total }}/{{ stats.asociados_quorum }}
+               </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -233,7 +304,9 @@ const stats = ref<any>({
   votos_validos: 0,
   votos_nulos: 0,
   votos_blancos: 0,
-  total_votantes: 0
+  total_votantes: 0,
+  asociados_activos: 0,
+  asociados_quorum: 0
 })
 
 const lastUpdate = ref('')
@@ -243,6 +316,10 @@ const isLoading = ref(true)
 const sortedCandidatos = computed(() => {
     if (!stats.value.candidatos) return []
     return [...stats.value.candidatos].sort((a: any, b: any) => b.total_votos - a.total_votos)
+})
+
+const isQuorumMet = computed(() => {
+    return (stats.value.total || 0) >= (stats.value.asociados_quorum || 0) && (stats.value.asociados_quorum || 0) > 0
 })
 
 const maxVotes = computed(() => {
