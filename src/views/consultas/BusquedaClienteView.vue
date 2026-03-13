@@ -15,15 +15,27 @@
     <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
         <div class="max-w-2xl mx-auto space-y-6">
             
-            <!-- Tabs -->
-            <div class="flex p-1 bg-gray-100 dark:bg-gray-700/50 rounded-xl max-w-sm mx-auto">
-                <button @click="activeTab = 'dpi'"
-                        :class="['flex-1 py-2 px-4 rounded-lg text-sm font-bold transition-all', activeTab === 'dpi' ? 'bg-white dark:bg-gray-800 text-verde-cope shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300']">
-                    Por DPI / Código
-                </button>
+            <!-- Tabs Mejorados -->
+            <div class="flex p-1.5 bg-gray-100 dark:bg-gray-700/50 rounded-2xl max-w-md mx-auto border border-gray-200/50 dark:border-gray-600/30 shadow-inner">
                 <button @click="activeTab = 'nombre'"
-                        :class="['flex-1 py-2 px-4 rounded-lg text-sm font-bold transition-all', activeTab === 'nombre' ? 'bg-white dark:bg-gray-800 text-verde-cope shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300']">
-                    Por Nombre
+                        :class="['flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-black transition-all duration-300', 
+                                 activeTab === 'nombre' 
+                                 ? 'bg-white dark:bg-gray-800 text-azul-cope shadow-md scale-[1.02] ring-1 ring-blue-500/10' 
+                                 : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300']">
+                    <svg class="w-4 h-4" :class="activeTab === 'nombre' ? 'text-azul-cope' : 'text-gray-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    <span>POR NOMBRE</span>
+                </button>
+                <button @click="activeTab = 'dpi'"
+                        :class="['flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-black transition-all duration-300', 
+                                 activeTab === 'dpi' 
+                                 ? 'bg-white dark:bg-gray-800 text-verde-cope shadow-md scale-[1.02] ring-1 ring-green-500/10' 
+                                 : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300']">
+                    <svg class="w-4 h-4" :class="activeTab === 'dpi' ? 'text-verde-cope' : 'text-gray-400'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.333 0 4 1 4 3"></path>
+                    </svg>
+                    <span>DPI / CÓDIGO</span>
                 </button>
             </div>
 
