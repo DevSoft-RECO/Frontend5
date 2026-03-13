@@ -203,32 +203,50 @@
         </div>
 
         <!-- Result Card: Colocacion Info -->
-        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 flex items-center gap-3">
-                <div class="w-8 h-8 bg-blue-600/10 text-blue-600 rounded-lg flex items-center justify-center">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 flex flex-col max-h-[600px]">
+            <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-600/10 text-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Créditos ({{ result.colocaciones?.length || 0 }})</h3>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Créditos (Colocación)</h3>
+                <div v-if="result.colocaciones?.length > 0" class="px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-[10px] font-bold rounded-md">
+                    TOTAL
+                </div>
             </div>
 
-            <div v-if="result.colocacion" class="p-6 flex-1 space-y-6">
-                <div class="space-y-1">
-                    <span class="text-xs text-gray-400 uppercase font-bold tracking-wider">No. Documento</span>
-                    <p class="text-gray-900 dark:text-gray-100 font-mono font-bold">{{ result.colocacion.numerodocumento }}</p>
+            <div v-if="result.colocaciones && result.colocaciones.length > 0" class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4">
+                <div v-for="(credit, index) in result.colocaciones" :key="index" 
+                     class="p-4 rounded-2xl border transition-all"
+                     :class="credit.diasmora > 0 ? 'bg-red-50/50 border-red-100 dark:bg-red-900/10 dark:border-red-900/30' : 'bg-gray-50 dark:bg-gray-900/20 border-gray-100 dark:border-gray-700'">
+                    
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="space-y-1">
+                            <span class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">No. Documento / Crédito</span>
+                            <p class="text-gray-900 dark:text-gray-100 font-mono font-bold">{{ credit.numerodocumento || credit.cuentadiaria }}</p>
+                        </div>
+                        <div class="text-right">
+                             <span :class="['px-2 py-0.5 rounded text-[10px] font-bold uppercase', credit.diasmora > 0 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600']">
+                                {{ credit.diasmora > 0 ? 'Con Mora' : 'Al Día' }}
+                             </span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                             <span class="block text-[9px] text-gray-400 uppercase font-bold tracking-widest mb-0.5">Mora</span>
+                             <p :class="['font-bold text-xl', credit.diasmora > 0 ? 'text-red-500' : 'text-gray-900 dark:text-gray-100']">{{ credit.diasmora }}</p>
+                        </div>
+                        <div class="p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                             <span class="block text-[9px] text-gray-400 uppercase font-bold tracking-widest mb-0.5">Saldo Capital</span>
+                             <p class="text-blue-600 dark:text-blue-400 font-bold text-xl">{{ formatCurrency(credit.saldocapital) }}</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-2xl border border-orange-100 dark:border-orange-900/30">
-                    <span class="block text-orange-600 dark:text-orange-400 text-xs font-bold uppercase tracking-widest mb-1">Días de Mora</span>
-                    <p class="text-orange-700 dark:text-orange-300 font-bold text-3xl">{{ result.colocacion.diasmora }}</p>
-                </div>
-
-                <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-900/30">
-                    <span class="block text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-widest mb-1">Saldo Capital</span>
-                    <p class="text-blue-700 dark:text-blue-300 font-bold text-3xl">{{ formatCurrency(result.colocacion.saldocapital) }}</p>
-                </div>
-
-                <div class="text-[10px] text-gray-400 text-right italic pt-4">
-                    Actualizado: {{ formatDate(result.colocacion.updated_at) }}
+                <div v-if="result.colocaciones?.length > 0" class="text-[10px] text-gray-400 text-right italic pt-2 sticky bottom-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm -mx-6 px-6 pb-2">
+                    Corte al: {{ formatDate(result.colocaciones[0]?.updated_at) }}
                 </div>
             </div>
 
@@ -272,6 +290,8 @@ interface ClientPersonal {
 
 interface ColocacionData {
     numerodocumento: string
+    cuentadiaria?: string
+    numero_credito?: string
     diasmora: number
     saldocapital: string | number
     updated_at: string
@@ -280,6 +300,7 @@ interface ColocacionData {
 interface SearchResult {
     personal: ClientPersonal
     colocacion: ColocacionData | null
+    colocaciones: ColocacionData[]
 }
 
 const activeTab = ref<'dpi' | 'nombre'>('dpi')
@@ -513,6 +534,30 @@ const handleVerify = async () => {
         if (response.data.success) {
             const { approved, checks } = response.data.data
             
+            let creditsHtml = '';
+            if (checks.mora.credits && checks.mora.credits.length > 0) {
+                creditsHtml = `
+                    <div class="mt-3 p-2 bg-gray-100/50 dark:bg-gray-700/30 rounded-xl border border-gray-200/50 dark:border-gray-600/30">
+                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest px-2 mb-2">Desglose de Créditos</p>
+                        <div class="space-y-1.5">
+                            ${checks.mora.credits.map((c: any) => `
+                                <div class="flex items-center justify-between px-3 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-1.5 h-1.5 rounded-full ${c.diasmora > 0 ? 'bg-red-500 animate-pulse' : 'bg-green-500'}"></div>
+                                        <span class="text-[11px] font-mono font-bold text-gray-700 dark:text-gray-300">#${c.numero_credito}</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-[10px] font-black ${c.diasmora > 0 ? 'text-red-600' : 'text-green-600'}">
+                                            ${c.diasmora} ${c.diasmora === 1 ? 'día' : 'días'} mora
+                                        </span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
             let html = `
                 <div class="text-left space-y-4 py-2">
                     <div class="flex items-center justify-between p-3 rounded-xl ${checks.edad.passed ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}">
@@ -537,15 +582,20 @@ const handleVerify = async () => {
                         <span class="text-xs font-bold">Q${checks.aportaciones.val}</span>
                     </div>
 
-                    <div class="flex items-center justify-between p-3 rounded-xl ${checks.mora.passed ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xl">${checks.mora.passed ? '✅' : '❌'}</span>
-                            <div>
-                                <p class="text-xs font-bold text-gray-500 uppercase tracking-tighter">Historial de Crétidos</p>
-                                <p class="text-sm font-medium ${checks.mora.passed ? 'text-green-700' : 'text-red-700'}">${checks.mora.message}</p>
+                    <div class="flex flex-col p-3 rounded-xl ${checks.mora.passed ? 'bg-green-50 border border-green-100' : 'bg-red-50 border border-red-100'}">
+                        <div class="flex items-center justify-between w-full">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xl">${checks.mora.passed ? '✅' : '❌'}</span>
+                                <div>
+                                    <p class="text-xs font-bold text-gray-500 uppercase tracking-tighter">Historial de Crétidos</p>
+                                    <p class="text-sm font-medium ${checks.mora.passed ? 'text-green-700' : 'text-red-700'}">${checks.mora.message}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                ${checks.mora.has_credit ? `<p class="text-xs font-bold">Max Mora: ${checks.mora.val}</p>` : ''}
                             </div>
                         </div>
-                        ${checks.mora.has_credit ? `<span class="text-xs font-bold">Mora: ${checks.mora.val}</span>` : ''}
+                        ${creditsHtml}
                     </div>
                 </div>
             `
@@ -636,7 +686,7 @@ const handleVerify = async () => {
     }
 }
 
-const formatDate = (dateStr: string) => {
+const formatDate = (dateStr: string | undefined) => {
     if (!dateStr) return 'N/A'
     return new Date(dateStr).toLocaleDateString('es-GT', { 
         year: 'numeric', 
