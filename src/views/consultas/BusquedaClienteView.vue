@@ -303,7 +303,7 @@ interface SearchResult {
     colocaciones: ColocacionData[]
 }
 
-const activeTab = ref<'dpi' | 'nombre'>('dpi')
+const activeTab = ref<'dpi' | 'nombre'>('nombre')
 const searchQuery = ref('')
 const searchNameQuery = ref('')
 const result = ref<SearchResult | null>(null)
