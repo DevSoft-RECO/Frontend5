@@ -105,8 +105,9 @@ const router = createRouter({
 })
 
 // --- GUARDIA DE NAVEGACIÓN ---
-router.beforeEach(async (to, _from) => {
+router.beforeEach(async (to) => {
     const authStore = useAuthStore()
+    const MOTHER_APP_URL = import.meta.env.VITE_MOTHER_APP_URL || 'http://localhost:5173'
 
     // 0. Callback o Unauthorized → siempre pasar
     if (to.name === 'callback' || to.name === 'unauthorized') {
@@ -116,11 +117,11 @@ router.beforeEach(async (to, _from) => {
     const isAuthenticated = !!authStore.token
 
     // Caso 1: Ruta protegida sin token
-    if (to.matched.some(record => record.meta.requiresAuth) || to.path === '/') {
+    if (to.matched.some(record => record.meta.requiresAuth)) {
         if (!isAuthenticated) {
             console.log('🔒 Acceso Hija: Usuario sin sesión. Iniciando flujo SSO...')
             authStore.login()
-            return false
+            return false // CRÍTICO: Bloqueamos a Vue Router mientras redirecciona
         }
     }
 
@@ -130,38 +131,28 @@ router.beforeEach(async (to, _from) => {
             try {
                 await authStore.fetchUser()
             } catch {
+                authStore.login()
                 return false
             }
         }
 
         // Verificar permiso
-        if (to.meta.permission && !authStore.hasPermission(to.meta.permission)) {
-            // const motherAppUrl =
-            //     import.meta.env.VITE_MOTHER_APP_URL || 'http://localhost:5173'
-
-            console.warn(
-                `⛔ Acceso denegado: Usuario no tiene el permiso '${to.meta.permission}'.`
-            )
-
-            // window.location.href = `${motherAppUrl}/apps`
+        if (to.meta.permission && !authStore.hasPermission(to.meta.permission as string)) {
+            console.warn(`⛔ Acceso denegado: Usuario no tiene el permiso '${to.meta.permission}'.`)
+            window.location.href = `${MOTHER_APP_URL}/apps`
             return false
         }
 
         // Verificar rol
-        if (to.meta.role && !authStore.hasRole(to.meta.role)) {
-            // const motherAppUrl =
-            //     import.meta.env.VITE_MOTHER_APP_URL || 'http://localhost:5173'
-
-            console.warn(
-                `⛔ Acceso denegado: Usuario no tiene el rol '${to.meta.role}'.`
-            )
-
-            // window.location.href = `${motherAppUrl}/apps`
+        if (to.meta.role && !authStore.hasRole(to.meta.role as string)) {
+            console.warn(`⛔ Acceso denegado: Usuario no tiene el rol '${to.meta.role}'.`)
+            window.location.href = `${MOTHER_APP_URL}/apps`
             return false
         }
     }
 
     return true
 })
+
 
 export default router

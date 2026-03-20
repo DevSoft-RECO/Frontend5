@@ -1,7 +1,8 @@
-import motherApi from '@/api/axios-mother';
+import { preparePKCE } from '@/utils/auth-crypto';
 
-// Variables de entorno
-const MOTHER_APP_URL = import.meta.env.VITE_MOTHER_APP_URL;
+const MOTHER_API_URL = import.meta.env.VITE_MOTHER_API_URL || 'http://localhost:8000';
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
+const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
 
 export interface UserData {
     [key: string]: any;
@@ -14,48 +15,38 @@ export interface TokenResponse {
 
 export default {
     /**
-     * 1. INICIAR LOGIN (Navegador)
+     * 1. INICIAR LOGIN (OAuth2 PKCE)
      */
     async login(): Promise<void> {
-        window.location.href = `${MOTHER_APP_URL}`;
+        const challenge = await preparePKCE();
+
+        const authUrl = new URL(`${MOTHER_API_URL}/oauth/authorize`);
+        authUrl.searchParams.append('client_id', CLIENT_ID);
+        authUrl.searchParams.append('redirect_uri', REDIRECT_URI);
+        authUrl.searchParams.append('response_type', 'code');
+        authUrl.searchParams.append('scope', '*');
+        authUrl.searchParams.append('code_challenge', challenge);
+        authUrl.searchParams.append('code_challenge_method', 'S256');
+
+        // Anti-Race Condition: setTimeout de 150ms
+        setTimeout(() => {
+            window.location.href = authUrl.toString();
+        }, 150);
     },
 
     /**
-     * 2. PROCESAR TOKEN DIRECTO (SSO Implícito)
-     */
-    processDirectToken(token: string, userData: any = null): TokenResponse {
-        if (!token) throw new Error('Token no proporcionado.');
-
-        localStorage.setItem('access_token', token);
-
-        if (userData) {
-            const user = typeof userData === 'string' ? JSON.parse(userData) : userData;
-            localStorage.setItem('user_data', JSON.stringify(user));
-            return { access_token: token, user };
-        }
-
-        return { access_token: token };
-    },
-
-    /**
-     * 3. OBTENER USUARIO (API Madre)
-     */
-    async getUser(): Promise<any> {
-        const response = await motherApi.get('/api/user');
-        return response.data;
-    },
-
-    /**
-     * 4. LOGOUT CENTRALIZADO (Desde App Madre)
+     * 2. LOGOUT CENTRALIZADO (Desde App Madre)
      */
     logout(): void {
         this.logoutLocal();
-        window.location.href = `${MOTHER_APP_URL}/logout`;
+        window.location.href = `${MOTHER_API_URL}/logout`;
     },
 
     logoutLocal(): void {
         localStorage.removeItem('access_token');
         localStorage.removeItem('user_data');
-        localStorage.removeItem('pkce_verifier');
+        sessionStorage.removeItem('user_data');
+        sessionStorage.removeItem('pkce_verifier');
     }
 };
+

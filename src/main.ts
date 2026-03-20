@@ -13,6 +13,8 @@ import App from './App.vue'
 import router from './router'
 import { useLayoutStore } from '@/stores/layout'
 
+import { startSessionGuards } from './utils/sessionGuards'
+
 const app = createApp(App)
 const pinia = createPinia()
 
@@ -22,6 +24,9 @@ app.use(router)
 const layoutStore = useLayoutStore()
 layoutStore.initTheme()
 
+// Iniciar Guardianes de Sesión
+startSessionGuards()
+
 // Detectar cambios del sistema en tiempo real
 window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
     if (!localStorage.getItem('theme')) {
@@ -30,3 +35,4 @@ window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () 
 })
 
 app.mount('#app')
+

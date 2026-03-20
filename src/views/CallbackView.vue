@@ -2,7 +2,6 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import axios from 'axios' // Mantenemos axios para la configuración robusta
 
 const route = useRoute()
 const router = useRouter()
@@ -13,42 +12,40 @@ const subStatus = ref(
   'Estamos verificando tu identidad con los sistemas de la Cooperativa YAMAN KUTX.'
 )
 
-onMounted(async () => {
-  // ADAPTACIÓN: Usamos el token directo según el refactor reciente
-  const token = route.query.token as string
+// Semáforo Global para evitar race-conditions si Vue monta doble
+let isProcessingCallback = false;
 
-  if (!token) {
+onMounted(async () => {
+  if (isProcessingCallback) return;
+  isProcessingCallback = true;
+
+  const code = route.query.code as string;
+  if (!code) {
     status.value = 'Autenticación no válida'
-    subStatus.value =
-      'No se recibió la información necesaria para validar la sesión.'
-    return
+    subStatus.value = 'No se recibió la información necesaria para validar la sesión.'
+    return;
   }
 
+  // Limpiar la URL de parámetros sensibles
+  window.history.replaceState({}, document.title, window.location.pathname);
+
   try {
-    // 1. Configuración Robusta (Race Condition Fix)
-    authStore.token = token
-    localStorage.setItem('access_token', token)
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
-    // 2. Procesar en store
-    await authStore.handleDirectToken(token)
-
+    await authStore.handlePKCECallback(code);
+    
     status.value = 'Acceso autorizado'
-    subStatus.value =
-      'Bienvenido a los sistemas internos de la Cooperativa YAMAN KUTX.'
+    subStatus.value = 'Bienvenido a los sistemas internos de la Cooperativa YAMAN KUTX.'
 
-    setTimeout(() => {
-      router.push({ name: 'dashboard' })
-    }, 900)
-
+    setTimeout(() => { 
+        router.push({ name: 'dashboard' }) 
+    }, 900);
   } catch (e) {
-    console.error(e)
+    console.error("Fallo al canjear PKCE:", e);
     status.value = 'Error de autenticación'
-    subStatus.value =
-      'No fue posible validar tu sesión. Por favor, intenta nuevamente.'
+    subStatus.value = 'No fue posible validar tu sesión. Por favor, intenta nuevamente.'
   }
 })
 </script>
+
 <template>
   <div
     class="min-h-screen flex items-center justify-center px-4

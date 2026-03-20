@@ -35,10 +35,15 @@ api.interceptors.response.use(
     (error: AxiosError) => {
         if (error.response && error.response.status === 401) {
             console.error('[Axios Local] Error 401. El token fue enviado pero rechazado por el servidor.');
-            console.error('Detalles del error:', error.response.data);
+            localStorage.removeItem('access_token');
+            sessionStorage.clear();
+            
+            // Redirigir al flujo de login
+            import('@/services/AuthService').then(module => module.default.login());
         }
         return Promise.reject(error);
     }
 );
+
 
 export default api;
