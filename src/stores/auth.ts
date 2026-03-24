@@ -18,18 +18,22 @@ export interface User {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-    // MIGRACIÓN DE ALMACENAMIENTO
-    const STORAGE_VERSION = 'v2_pkce'; 
+    // MIGRACIÓN DE ALMACENAMIENTO (Limpia cachés viejas si cambias de arquitectura)
+    // IMPORTANTE: Asegúrate de que esta versión sea ÚNICA para cada App Hija
+    const STORAGE_VERSION = 'v3_asamblea_clean'; 
+
     if (localStorage.getItem('yk_storage_version') !== STORAGE_VERSION) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user_data');
-        sessionStorage.removeItem('user_data');
+        const keysToRemove = ['access_token', 'user_data', 'pkce_verifier'];
+        keysToRemove.forEach(k => {
+            localStorage.removeItem(k);
+            sessionStorage.removeItem(k);
+        });
         localStorage.setItem('yk_storage_version', STORAGE_VERSION);
     }
 
     // --- STATE ---
     const user = ref<User | null>(JSON.parse(sessionStorage.getItem('user_data') || 'null'))
-    const token = ref<string | null>(localStorage.getItem('access_token') || null)
+    const token = ref<string | null>(sessionStorage.getItem('access_token') || null)
     const processingSSO = ref<boolean>(false)
     const isReady = ref<boolean>(false)
 
@@ -40,9 +44,20 @@ export const useAuthStore = defineStore('auth', () => {
 
     // --- ACTIONS ---
 
-    async function login(): Promise<void> {
-        processingSSO.value = true
-        await AuthService.login()
+    /**
+     * Inicia el flujo de redirección a la Madre
+     * @param {string} redirectTo URL a la que volver tras el login (opcional)
+     */
+    async function login(redirectTo: string | null = null): Promise<void> {
+        if (processingSSO.value) return; // Evitar múltiples redirecciones
+        processingSSO.value = true;
+        
+        if (redirectTo) {
+            sessionStorage.setItem('auth_redirect_to', redirectTo);
+        }
+        
+        await AuthService.login();
+        // processingSSO se reseteará al volver del callback o en catch
     }
 
     async function handlePKCECallback(code: string): Promise<void> {
@@ -60,10 +75,10 @@ export const useAuthStore = defineStore('auth', () => {
             });
 
             token.value = response.data.access_token;
-            localStorage.setItem('access_token', token.value as string);
+            sessionStorage.setItem('access_token', token.value as string);
             sessionStorage.removeItem('pkce_verifier');
 
-            await fetchUser();
+            await fetchUser(true); // Forzar descarga de perfil limpio tras login
         } catch (error) {
             console.error('Error canjeando PKCE:', error)
             throw error
@@ -79,8 +94,18 @@ export const useAuthStore = defineStore('auth', () => {
         AuthService.logout()
     }
 
-    async function fetchUser(): Promise<void> {
+    /**
+     * Obtiene usuario desde Backend LOCAL (que sincroniza JIT con la Madre)
+     * @param {boolean} force Si es true, ignora la caché y descarga de nuevo
+     */
+    async function fetchUser(force = false): Promise<void> {
         if (!token.value) {
+            isReady.value = true
+            return
+        }
+
+        // Si ya tenemos el usuario cargado, no volvemos a pedirlo a menos que se fuerce
+        if (!force && user.value) {
             isReady.value = true
             return
         }
@@ -93,6 +118,7 @@ export const useAuthStore = defineStore('auth', () => {
             sessionStorage.setItem('user_data', JSON.stringify(userData))
         } catch (error) {
             console.warn('Sesión expirada o inválida, o error al conectar con Api Local', error)
+            // En caso de error 401, el interceptor de axios se encargará del logout
         } finally {
             isReady.value = true
         }

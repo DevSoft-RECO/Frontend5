@@ -120,7 +120,7 @@ router.beforeEach(async (to) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (!isAuthenticated) {
             console.log('🔒 Acceso Hija: Usuario sin sesión. Iniciando flujo SSO...')
-            authStore.login()
+            authStore.login(to.fullPath)
             return false // CRÍTICO: Bloqueamos a Vue Router mientras redirecciona
         }
     }
@@ -131,7 +131,7 @@ router.beforeEach(async (to) => {
             try {
                 await authStore.fetchUser()
             } catch {
-                authStore.login()
+                authStore.login(to.fullPath)
                 return false
             }
         }
@@ -139,14 +139,14 @@ router.beforeEach(async (to) => {
         // Verificar permiso
         if (to.meta.permission && !authStore.hasPermission(to.meta.permission as string)) {
             console.warn(`⛔ Acceso denegado: Usuario no tiene el permiso '${to.meta.permission}'.`)
-            window.location.href = `${MOTHER_APP_URL}/apps`
+            // window.location.href = `${MOTHER_APP_URL}/apps`
             return false
         }
 
         // Verificar rol
         if (to.meta.role && !authStore.hasRole(to.meta.role as string)) {
             console.warn(`⛔ Acceso denegado: Usuario no tiene el rol '${to.meta.role}'.`)
-            window.location.href = `${MOTHER_APP_URL}/apps`
+            //  window.location.href = `${MOTHER_APP_URL}/apps`
             return false
         }
     }

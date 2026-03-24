@@ -12,16 +12,14 @@ const api = axios.create({
 // --- INTERCEPTOR DE REQUEST (Salida) ---
 api.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-        const token = localStorage.getItem('access_token');
-
-        console.log(`[Axios Local] Preparando petición a: ${config.url}`);
+        const token = sessionStorage.getItem('access_token');
 
         if (token) {
-            console.log("[Axios Local] Token encontrado en localStorage. Agregando header Authorization.");
+            console.log("[Axios Local] Token encontrado en sessionStorage. Agregando header Authorization.");
             const authHeader = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
             config.headers.Authorization = authHeader;
         } else {
-            console.warn("[Axios Local] ADVERTENCIA: No se encontró token en localStorage. La petición irá sin autenticación.");
+            console.warn("[Axios Local] ADVERTENCIA: No se encontró token en sessionStorage. La petición irá sin autenticación.");
         }
 
         return config;
@@ -34,8 +32,8 @@ api.interceptors.response.use(
     (response: AxiosResponse) => response,
     (error: AxiosError) => {
         if (error.response && error.response.status === 401) {
-            console.error('[Axios Local] Error 401. El token fue enviado pero rechazado por el servidor.');
-            localStorage.removeItem('access_token');
+            console.error('[Axios Local] Error 401. Sesión rechazada por Ecosistema.');
+            sessionStorage.removeItem('access_token');
             sessionStorage.clear();
             
             // Redirigir al flujo de login

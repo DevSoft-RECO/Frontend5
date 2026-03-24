@@ -50,23 +50,34 @@ onMounted(async () => {
 
     const token = data.access_token;
     
-    // Limpieza de URL
+    // 1. Limpieza de URL
     window.history.replaceState({}, document.title, window.location.pathname);
 
-    // 1. Configuración Robusta
+    // 2. Configuración Robusta
     authStore.token = token
-    localStorage.setItem('access_token', token)
+    sessionStorage.setItem('access_token', token)
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
-    // 2. Cargar usuario cacheando en sessionStorage
-    await authStore.fetchUser()
+    // 3. Cargar usuario cacheando en sessionStorage
+    await authStore.fetchUser(true)
 
     status.value = 'Acceso autorizado'
     subStatus.value =
       'Bienvenido a los sistemas internos de la Cooperativa YAMAN KUTX.'
 
+    // Redirección Dinámica: Volver a donde el usuario intentaba entrar
+    const redirectUrl = sessionStorage.getItem('auth_redirect_to') || 'dashboard';
+    if (sessionStorage.getItem('auth_redirect_to')) {
+       sessionStorage.removeItem('auth_redirect_to');
+    }
+
     setTimeout(() => {
-      router.push({ name: 'dashboard' })
+        // Si es un nombre de ruta o una ruta completa
+        if (redirectUrl === 'dashboard') {
+            router.push({ name: 'dashboard' })
+        } else {
+            router.push(redirectUrl)
+        }
     }, 900)
 
   } catch (e) {
