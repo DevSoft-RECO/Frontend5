@@ -19,16 +19,17 @@ export interface User {
 
 export const useAuthStore = defineStore('auth', () => {
     // MIGRACIÓN DE ALMACENAMIENTO (Limpia cachés viejas si cambias de arquitectura)
-    // IMPORTANTE: Asegúrate de que esta versión sea ÚNICA para cada App Hija
+    // USAMOS UNA CLAVE ÚNICA POR APP PARA EVITAR COLISIONES EN PORTALES
+    const STORAGE_VERSION_KEY = 'yk_storage_version_asamblea'; // Única para esta app
     const STORAGE_VERSION = 'v3_asamblea_clean'; 
 
-    if (localStorage.getItem('yk_storage_version') !== STORAGE_VERSION) {
+    if (localStorage.getItem(STORAGE_VERSION_KEY) !== STORAGE_VERSION) {
         const keysToRemove = ['access_token', 'user_data', 'pkce_verifier'];
         keysToRemove.forEach(k => {
             localStorage.removeItem(k);
             sessionStorage.removeItem(k);
         });
-        localStorage.setItem('yk_storage_version', STORAGE_VERSION);
+        localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION);
     }
 
     // --- STATE ---

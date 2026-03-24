@@ -31,15 +31,24 @@ onMounted(async () => {
   }
 
   try {
-    const code_verifier = sessionStorage.getItem('pkce_verifier')
-    const client_id = import.meta.env.VITE_CLIENT_ID || '019b27d0-4adc-70f7-ba93-84024bf43d46'
-    const redirect_uri = `${window.location.origin}/callback`
+    // 1. Recuperación Resiliente del Verifier (Priority: sessionStorage > localStorage)
+    let code_verifier = sessionStorage.getItem('pkce_verifier') || localStorage.getItem('pkce_verifier');
+
+    const client_id = import.meta.env.VITE_CLIENT_ID || 'ea0828b0-f449-4149-a4ba-19f8a84b129e'
+    const redirect_uri = import.meta.env.VITE_REDIRECT_URI || `${window.location.origin}/callback`
     const MOTHER_API_URL = import.meta.env.VITE_MOTHER_API_URL || 'http://localhost:8000'
 
     if (!code_verifier) {
-        throw new Error("No se encontró el pkce_verifier en almacenamiento local.");
+        console.error("DEBUG STORAGE:", {
+            session: { ...sessionStorage },
+            local: { ...localStorage },
+            origin: window.location.origin,
+            protocol: window.location.protocol
+        });
+        throw new Error("No se encontró el pkce_verifier en almacenamiento seguro.");
     }
 
+    // Intercambiar código por token
     const { data } = await axios.post(`${MOTHER_API_URL}/oauth/token`, {
         grant_type: 'authorization_code',
         client_id,
@@ -53,9 +62,14 @@ onMounted(async () => {
     // 1. Limpieza de URL
     window.history.replaceState({}, document.title, window.location.pathname);
 
-    // 2. Configuración Robusta
+    // 2. Configuración Robusta (Favoring sessionStorage)
     authStore.token = token
     sessionStorage.setItem('access_token', token)
+    
+    // Limpieza de PKCE Verifiers Usados
+    sessionStorage.removeItem('pkce_verifier');
+    localStorage.removeItem('pkce_verifier');
+
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
     // 3. Cargar usuario cacheando en sessionStorage
@@ -80,11 +94,16 @@ onMounted(async () => {
         }
     }, 900)
 
-  } catch (e) {
-    console.error(e)
+  } catch (e: any) {
+    console.error('Error en Callback:', e)
     status.value = 'Error de autenticación'
-    subStatus.value =
-      'No fue posible validar tu sesión. Por favor, intenta nuevamente.'
+    
+    // Proporcionar pistas si el verifier falló
+    if (e.message?.includes('pkce_verifier')) {
+        subStatus.value = 'Sesión expirada o inicio de sesión inválido. Regresa al portal principal (App Madre).'
+    } else {
+        subStatus.value = 'No fue posible validar tu sesión. Por favor, intenta nuevamente o contacta a soporte.'
+    }
   }
 })
 </script>

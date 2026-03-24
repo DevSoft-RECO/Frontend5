@@ -20,7 +20,10 @@ const base64urlencode = (a: ArrayBuffer) => {
 export const preparePKCE = async () => {
     const verifier = generateRandomString(32);
     const challenge = base64urlencode(await sha256(verifier));
-    // El verifier se guarda solo en esta pestaña
+    
+    // Guardamos en ambos para máxima resiliencia ante redirecciones cross-origin/protocol
     sessionStorage.setItem('pkce_verifier', verifier);
+    localStorage.setItem('pkce_verifier', verifier);
+    
     return challenge;
 };
